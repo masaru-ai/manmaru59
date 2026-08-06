@@ -11,7 +11,7 @@
 <style>
   :root{--blue:#0061b0;--blue-lt:#4d9bff;--gold:#e6b400;--gold-dk:#b98f00;--bg:#0f172a;--panel:#16223b;--panel2:#1d2c4a;--line:#2b3d63;--ink:#e8eefc;--muted:#8fa4cc;--plus:#e6b400;--minus:#ff7b7b;--zero:#8fa4cc;--green:#25c26b;}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;}
-  body{margin:0 auto;max-width:430px;background:var(--bg);color:var(--ink);padding-bottom:40px;
+  body{margin:0 auto;max-width:900px;background:var(--bg);color:var(--ink);padding-bottom:40px;
     font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;user-select:none;}
   .plus{color:var(--plus);}.minus{color:var(--minus);}.zero{color:var(--zero);}
 
@@ -41,7 +41,7 @@
   .stephint div{padding:2px 0;}
   .stephint b{color:var(--ink);}
 
-  .players{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;margin:6px 14px 0;}
+  .players{display:grid;grid-template-columns:repeat(auto-fit,minmax(84px,1fr));gap:8px;margin:6px 14px 0;}
   .pc{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:9px 6px 9px;text-align:center;}
   .pc.ro{border-color:var(--gold);box-shadow:0 0 0 2px rgba(230,180,0,.5) inset;}
   .pc.ro::before{content:'🔥';position:absolute;top:5px;right:7px;font-size:13px;line-height:1;}
@@ -68,7 +68,7 @@
 
   .runsel{margin:12px 14px 0;}
   .runsel .lb{font-size:12px;color:var(--gold);font-weight:800;margin-bottom:8px;text-align:center;}
-  .runsel .btns{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;}
+  .runsel .btns{display:grid;grid-template-columns:repeat(auto-fit,minmax(84px,1fr));gap:8px;}
   .runsel button{padding:9px 0;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--muted);font-weight:800;font-size:13px;}
   .runsel button.on{background:linear-gradient(90deg,rgba(230,180,0,.35),rgba(230,180,0,.08));border-color:var(--gold-dk);color:var(--gold);box-shadow:0 0 10px rgba(230,180,0,.2);}
   .runsel button:disabled{opacity:.28;}
