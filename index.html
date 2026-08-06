@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="MANMARU 59">
@@ -315,28 +315,32 @@ function strokeLen(s){let mnx=1e9,mny=1e9,mxx=-1e9,mxy=-1e9;s.forEach(p=>{mnx=Ma
 /* 全手書き窓で指を共有カウント：同時2本以上は描画しない(窓跨ぎ/ピンチ誤入力防止)＋2本指スクロール */
 const padPts=new Map(); let activePad=null,padScroll=false,padSy0=0,padSs0=0;
 const padAvgY=()=>{let s=0,n=0;padPts.forEach(y=>{s+=y;n++;});return n?s/n:0;};
+function sizePad(cv,ctx){                       // 表示サイズ×DPRで内部解像度を毎回合わせる
+  const r=cv.getBoundingClientRect(), dpr=window.devicePixelRatio||1;
+  const w=Math.max(1,Math.round(r.width*dpr)), h=Math.max(1,Math.round(r.height*dpr));
+  if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h;}
+  ctx.setTransform(dpr,0,0,dpr,0,0);           // 以後は CSS px 座標で描ける
+  ctx.lineWidth=4;ctx.lineCap='round';ctx.strokeStyle='#eaf1ff';
+  return r;
+}
 function attachPad(cv,id,card){
-  const ctx=cv.getContext('2d'),r=cv.getBoundingClientRect();
-  cv.width=r.width*2; cv.height=r.height*2; ctx.scale(2,2); ctx.lineWidth=4; ctx.lineCap='round'; ctx.strokeStyle='#eaf1ff';
+  const ctx=cv.getContext('2d');
   const ph=card.querySelector('.ph'); let cur_=null,drawing=false,brect=null;
   const pos=e=>{const b=brect||cv.getBoundingClientRect();return{x:e.clientX-b.left,y:e.clientY-b.top};};
   const allStrokes=()=>cur[id].picks.filter(p=>p.strokes).flatMap(p=>p.strokes);
-  const redraw=()=>{ctx.clearRect(0,0,cv.width,cv.height);
+  const redraw=()=>{const r=cv.getBoundingClientRect();ctx.clearRect(0,0,r.width,r.height);
     allStrokes().forEach(st=>{ctx.beginPath();st.forEach((pt,i)=>i?ctx.lineTo(pt.x,pt.y):ctx.moveTo(pt.x,pt.y));ctx.stroke();});
     ph.style.display=allStrokes().length?'none':'';};
-  const abort=()=>{drawing=false;cur_=null;redraw();};
-  cv._redraw=redraw; card._cv=cv; redraw();
+  const resize=()=>{sizePad(cv,ctx);redraw();};
+  const abort=()=>{drawing=false;cur_=null;resize();};
+  resize(); cv._redraw=resize; card._cv=cv;
   cv.addEventListener('pointerdown',e=>{e.stopPropagation(); padPts.set(e.pointerId,e.clientY);
-    if(padPts.size===1){ brect=cv.getBoundingClientRect(); drawing=true; cur_=[pos(e)]; cv.setPointerCapture(e.pointerId); ph.style.display='none'; activePad={cv,abort}; }
+    if(padPts.size===1){ brect=sizePad(cv,ctx); redraw(); drawing=true; cur_=[pos(e)]; cv.setPointerCapture(e.pointerId); ph.style.display='none'; activePad={cv,abort}; }
     else if(padPts.size===2){ if(activePad){activePad.abort();activePad=null;} drawing=false;cur_=null; padScroll=true; padSy0=padAvgY(); padSs0=window.scrollY; }  // 2本目=描画中止→スクロール
   });
   cv.addEventListener('pointermove',e=>{ if(padPts.has(e.pointerId)) padPts.set(e.pointerId,e.clientY);
     if(padScroll&&padPts.size>=2){ window.scrollTo(0, padSs0-(padAvgY()-padSy0)); return; }
-    if(!drawing||padPts.size>1)return;
-    const evs=(e.getCoalescedEvents&&e.getCoalescedEvents().length)?e.getCoalescedEvents():[e];
-    ctx.beginPath();ctx.moveTo(cur_[cur_.length-1].x,cur_[cur_.length-1].y);
-    for(const ev of evs){const p=pos(ev);ctx.lineTo(p.x,p.y);cur_.push(p);}
-    ctx.stroke();});
+    if(!drawing||padPts.size>1)return; const p=pos(e),a=cur_[cur_.length-1];ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(p.x,p.y);ctx.stroke();cur_.push(p);});
   const end=e=>{ padPts.delete(e.pointerId);
     if(padScroll&&padPts.size<2) padScroll=false;
     if(!drawing)return; drawing=false; const s=cur_; cur_=null; if(activePad&&activePad.cv===cv)activePad=null; if(!s)return;
@@ -354,6 +358,8 @@ function ensureUndo(card,id){
   card.appendChild(u);
 }
 
+let _rztmr; function refit(){clearTimeout(_rztmr);_rztmr=setTimeout(()=>{if(!reorderMode)renderPlayers();},160);}
+window.addEventListener('resize',refit); window.addEventListener('orientationchange',()=>setTimeout(refit,250));
 document.getElementById('howtoBtn').onclick=function(){const el=document.getElementById('stephint');const show=el.style.display==='none';el.style.display=show?'':'none';this.textContent='記入方法 '+(show?'▴':'▾');};
 document.getElementById('legendBtn').onclick=function(){const el=document.getElementById('legend');const show=el.style.display==='none';el.style.display=show?'':'none';this.textContent='凡例 '+(show?'▴':'▾');};
 document.getElementById('reorderBtn').onclick=function(){reorderMode=!reorderMode;leftEndChosen=false;
