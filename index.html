@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MANMARU 59">
+<meta name="theme-color" content="#0f172a">
+<title>MANMARU 59 スコア（手書き）</title>
+<style>
+  :root{--blue:#0061b0;--blue-lt:#4d9bff;--gold:#e6b400;--gold-dk:#b98f00;--bg:#0f172a;--panel:#16223b;--panel2:#1d2c4a;--line:#2b3d63;--ink:#e8eefc;--muted:#8fa4cc;--plus:#e6b400;--minus:#ff7b7b;--zero:#8fa4cc;--green:#25c26b;}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;}
+  body{margin:0 auto;max-width:430px;background:var(--bg);color:var(--ink);padding-bottom:40px;
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;user-select:none;}
+  .plus{color:var(--plus);}.minus{color:var(--minus);}.zero{color:var(--zero);}
+
+  .top{position:sticky;top:0;z-index:6;background:linear-gradient(180deg,#0d1830,#0f172a);border-bottom:1px solid var(--line);padding:9px 14px;}
+  .brand{display:flex;align-items:center;gap:6px;font-weight:800;font-size:15px;flex-wrap:nowrap;min-width:0;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold);flex-shrink:0;}
+  .brand small{color:var(--muted);font-weight:600;}
+  .page-pill{margin-left:auto;background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:3px 8px;font-weight:700;font-size:11px;white-space:nowrap;flex-shrink:0;}
+
+  .rack{margin:12px 14px 0;text-align:center;}
+  .rack .lab{font-size:12px;color:var(--muted);letter-spacing:.15em;font-weight:700;}
+  .rack .big{font-size:32px;font-weight:900;line-height:1.1;}.rack .big b{color:var(--gold);}
+
+  .dir{display:flex;align-items:center;justify-content:center;gap:10px;margin:10px 14px 0;padding:9px 12px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;}
+  .dir .arw{font-size:40px;font-weight:900;color:var(--gold);line-height:1;}
+  .dir .seq{font-size:16px;font-weight:900;}
+  .ordctl{display:flex;gap:8px;margin:8px 14px 0;}
+  .ordctl button{flex:1;padding:8px 0;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--muted);font-weight:800;font-size:13px;}
+  .ordctl button.on{background:var(--blue);border-color:var(--blue-lt);color:#fff;}
+  .reorderHint{margin:8px 14px 0;font-size:12px;color:var(--green);text-align:left;background:rgba(37,194,107,.1);border:1px solid rgba(37,194,107,.35);border-radius:10px;padding:8px 12px;line-height:1.4;}
+  .reorderHint div{padding:2px 0;}
+  .sh-full{width:100%;background:var(--blue);border:1px solid var(--blue-lt);color:#fff;border-radius:12px;padding:12px 0;font-weight:800;font-size:15px;}
+
+  .howto{margin:12px 14px 0;display:flex;align-items:flex-start;gap:10px;}
+  .howto-btn{flex-shrink:0;font-size:12px;color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:999px;padding:5px 14px;font-weight:700;white-space:nowrap;}
+  .stephint{flex:1;margin:0;font-size:12px;color:var(--muted);line-height:1.4;text-align:left;}
+  .stephint div{padding:2px 0;}
+  .stephint b{color:var(--ink);}
+
+  .players{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;margin:6px 14px 0;}
+  .pc{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:9px 6px 9px;text-align:center;}
+  .pc.ro{border-color:var(--gold);box-shadow:0 0 0 2px rgba(230,180,0,.5) inset;}
+  .pc.ro::before{content:'🔥';position:absolute;top:5px;right:7px;font-size:13px;line-height:1;}
+  .pc.drop{border-color:var(--green);box-shadow:0 0 0 2px rgba(37,194,107,.4) inset;transform:translateY(-2px);}
+  .pc.rgrip{cursor:grab;touch-action:none;}.pc.rgrip:active{cursor:grabbing;}
+  .pc .nm{font-size:13px;font-weight:800;}
+  .pc .net{font-size:20px;font-weight:900;margin-top:1px;}
+  .grip{font-size:10px;color:var(--muted);margin-top:8px;}
+  .pc.brk{border-color:var(--gold);box-shadow:0 0 0 2px rgba(230,180,0,.45) inset;}
+  .brk-t{color:var(--gold)!important;font-weight:800;}
+  .mini-sh{background:var(--blue);border:1px solid var(--blue-lt);color:#fff;border-radius:8px;padding:5px 12px;font-weight:800;font-size:12px;margin-left:4px;}
+  .pc.rest{opacity:.6;}
+  .restbox{margin-top:7px;height:88px;display:flex;align-items:center;justify-content:center;background:#0b1428;border:1.5px dashed var(--line);border-radius:10px;color:var(--muted);font-weight:800;font-size:13px;}
+  .restbtn{margin-top:6px;width:100%;font-size:11px;font-weight:800;padding:5px 0;border-radius:8px;border:1px solid var(--line);background:var(--panel2);color:var(--muted);}
+  .restbtn.back{color:var(--green);border-color:rgba(37,194,107,.4);}
+  .card-clone{pointer-events:none;position:fixed;z-index:99;transform:translate(-50%,-50%);opacity:.92;box-shadow:0 8px 18px rgba(0,0,0,.5);}
+
+  .padwrap{position:relative;margin-top:7px;height:88px;background:#0b1428;border:1.5px dashed var(--line);border-radius:10px;overflow:hidden;}
+  .padwrap canvas{width:100%;height:100%;display:block;touch-action:none;}
+  .padwrap .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#2a3a5e;font-size:26px;font-weight:800;pointer-events:none;}
+  .mk{margin-top:6px;font-family:ui-monospace,monospace;letter-spacing:2px;font-size:16px;color:var(--ink);min-height:20px;}
+  .mk small{color:var(--gold);font-family:inherit;font-weight:900;letter-spacing:0;}
+  .pcundo{margin-top:4px;font-size:10px;color:var(--muted);background:transparent;border:none;text-decoration:underline;}
+
+  .runsel{margin:12px 14px 0;}
+  .runsel .lb{font-size:12px;color:var(--gold);font-weight:800;margin-bottom:8px;text-align:center;}
+  .runsel .btns{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;}
+  .runsel button{padding:9px 0;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--muted);font-weight:800;font-size:13px;}
+  .runsel button.on{background:linear-gradient(90deg,rgba(230,180,0,.35),rgba(230,180,0,.08));border-color:var(--gold-dk);color:var(--gold);box-shadow:0 0 10px rgba(230,180,0,.2);}
+  .runsel button:disabled{opacity:.28;}
+
+  .actions{display:flex;gap:10px;margin:14px 14px 0;}
+  .actions .revert{flex:0 0 84px;padding:14px 0;border-radius:14px;border:1px solid var(--line);background:transparent;color:var(--muted);font-weight:800;font-size:13px;}
+  .actions .revert:disabled{opacity:.3;}
+  .actions .clear{flex:0 0 70px;padding:14px 0;border-radius:14px;border:1px solid var(--line);background:transparent;color:var(--muted);font-weight:800;font-size:13px;}
+  .actions .confirm{flex:1;padding:14px 0;border-radius:14px;border:none;background:linear-gradient(90deg,var(--gold),var(--gold-dk));color:#241c00;font-weight:900;font-size:16px;}
+
+  .board{margin:16px 14px 0;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px;overflow-x:auto;}
+  .gear{margin-left:auto;font-size:11px;color:var(--muted);background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-weight:800;white-space:nowrap;flex-shrink:0;}
+  .modal{position:fixed;inset:0;z-index:120;display:none;align-items:center;justify-content:center;background:rgba(6,12,26,.75);padding:18px;}
+  .modal.on{display:flex;}
+  .modal-card{width:100%;max-width:360px;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;max-height:88vh;overflow-y:auto;}
+  .modal-card h3{margin:0 0 12px;font-size:17px;font-weight:900;}
+  .cnt-row{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:14px;font-weight:800;}
+  .cnt-row button{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--panel2);color:var(--gold);font-size:22px;font-weight:900;}
+  .cnt-row span{font-size:22px;min-width:40px;text-align:center;}
+  .nameInput{display:block;width:100%;margin-bottom:8px;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);font-size:15px;font-weight:700;}
+  .nameInput:focus{outline:none;border-color:var(--blue-lt);}
+  .modal-actions{display:flex;flex-direction:column;gap:8px;margin-top:14px;}
+  .modal-actions button{padding:13px 0;border-radius:12px;border:none;font-weight:900;font-size:15px;}
+  .m-start{background:linear-gradient(90deg,var(--gold),var(--gold-dk));color:#241c00;}
+  .m-rename{background:var(--blue);color:#fff;}
+  .m-add{background:var(--green);color:#06210f;}
+  .m-cancel{background:transparent;border:1px solid var(--line)!important;color:var(--muted);}
+  .modal-card .warn{font-size:11px;color:var(--minus);text-align:center;margin-top:10px;}
+  .board h3{margin:0 0 4px;font-size:14px;}
+  .board .hint{font-size:12px;color:var(--muted);margin-bottom:10px;}
+  table{width:100%;border-collapse:collapse;font-size:14px;}
+  th,td{padding:8px 4px;text-align:center;border-bottom:1px solid var(--line);}
+  th{color:var(--muted);font-weight:700;font-size:12px;}td.lbl{color:var(--muted);text-align:left;font-size:12px;}
+  tr.cur td{background:rgba(77,155,255,.10);}
+  tr.clk{cursor:pointer;}tr.clk:active td{background:rgba(77,155,255,.14);}
+  .circle{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;padding:0 5px;border:2px solid var(--gold);border-radius:999px;color:var(--gold);font-weight:900;}
+  .totrow td{border-top:2px solid var(--line);border-bottom:none;padding-top:10px;font-weight:900;}
+  .foot{margin:14px 14px 0;font-size:11px;color:var(--muted);text-align:center;line-height:1.6;}
+  .copy{margin:8px 14px 14px;font-size:10px;color:#5a6b8c;text-align:center;letter-spacing:.02em;}
+
+  .celebrate{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 40%,rgba(10,40,26,.82),rgba(3,8,6,.9));backdrop-filter:blur(3px);overflow:hidden;padding:20px;}
+  .celebrate.on{display:flex;}
+  .cel-card{position:relative;width:100%;max-width:330px;text-align:center;background:#fbf8f0;border:2px solid var(--gold);border-radius:22px;padding:26px 24px 22px;box-shadow:0 0 55px rgba(230,180,0,.4);animation:pop .45s cubic-bezier(.2,1.3,.4,1);}
+  .cel-card .crown{width:84px;height:auto;margin-bottom:2px;}
+  .cel-card .t1{font-size:34px;font-weight:900;color:#1a1a1a;line-height:1;letter-spacing:.02em;}
+  .cel-card .t2{font-size:34px;font-weight:900;line-height:1.05;letter-spacing:.02em;background:linear-gradient(90deg,#e6b400,#b98f00);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .cel-card .ball{width:72px;height:72px;border-radius:50%;background:#fff;border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:900;color:#1a1a1a;margin:14px auto 2px;box-shadow:0 4px 10px rgba(0,0,0,.15);}
+  .cel-card .who2{font-size:19px;font-weight:900;color:#1a1a1a;margin-top:10px;}
+  .cel-card .who2 .pt2{color:var(--gold-dk);}
+  .cel-card .cap{font-size:13px;font-weight:700;color:#666;margin-top:8px;line-height:1.5;}
+  .cel-card .cap b{color:var(--gold-dk);font-size:17px;}
+  .cel-card .close{margin-top:16px;background:transparent;border:1.5px solid var(--gold);color:var(--gold-dk);border-radius:999px;padding:10px 36px;font-weight:900;font-size:14px;letter-spacing:.15em;}
+  .cel-mid{display:flex;align-items:center;justify-content:center;gap:16px;margin:16px 0 2px;}
+  .cel-mid svg{margin:0!important;}
+  .cnt2{display:flex;flex-direction:column;align-items:center;line-height:1;}
+  .cnt2 .cnt-lbl{font-size:13px;font-weight:800;color:#666;}
+  .cnt2 .cnt-num{font-size:42px;font-weight:900;color:var(--gold-dk);margin:2px 0;}
+  @keyframes pop{0%{transform:scale(.5);opacity:0;}100%{transform:scale(1);opacity:1;}}
+  .confetti{position:absolute;top:-24px;animation:fall linear forwards;}
+  @keyframes fall{0%{transform:translateY(-24px) rotate(0);opacity:1;}100%{transform:translateY(110vh) rotate(720deg);opacity:.9;}}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="brand"><span class="dot"></span>MANMARU <small>59</small>
+    <span class="page-pill" id="pagePill" style="margin-left:auto;">1ページ目 1/5</span>
+    <button class="gear" id="gearBtn" style="margin-left:6px;">⚙ 編集</button></div>
+</div>
+
+<div class="rack"><div class="lab">現在のラック</div><div class="big"><b id="rackNo">3</b>ラック目</div></div>
+
+<div class="dir" id="dir"></div>
+<div class="ordctl">
+  <button id="reorderBtn">✋ 順番を変更（左端＝ブレイク権）</button>
+</div>
+<div class="reorderHint" id="reorderHint" style="display:none;"></div>
+
+<div class="howto">
+  <button class="howto-btn" id="howtoBtn">記入方法 ▾</button>
+  <div class="stephint" id="stephint" style="display:none;">
+    <div>① 各自の窓に <b>|</b>（1点）<b>×</b>（2点）を書き溜める</div>
+    <div>② RUN OUT（マス割）の人を選ぶ</div>
+    <div>③ 確定</div>
+  </div>
+</div>
+
+<div class="players" id="players"></div>
+<div id="shuffleBar" style="margin:8px 14px 0;display:none;"></div>
+
+<div class="runsel" id="runsel"></div>
+
+<div class="actions">
+  <button class="clear" id="clearBtn">クリア</button>
+  <button class="confirm" id="confirmBtn">確定 →</button>
+</div>
+
+<div class="modal" id="setup">
+  <div class="modal-card">
+    <h3>プレイヤー編集</h3>
+    <div class="cnt-row">人数 <button id="mMinus">−</button><span id="mCount">4</span><button id="mPlus">＋</button></div>
+    <div id="nameInputs"></div>
+    <div class="modal-actions">
+      <button class="m-rename" id="setupRename">名前を更新（スコアは続行）</button>
+      <button class="m-add" id="setupAdd" style="display:none;">＋途中参加で追加（スコア続行）</button>
+      <button class="m-start" id="setupStart">この人数で新規ゲーム（リセット）</button>
+      <button class="m-cancel" id="setupCancel">キャンセル</button>
+    </div>
+    <p class="warn">※「新規ゲーム」だけスコアをリセットします（他はスコア続行）</p>
+  </div>
+</div>
+
+<div class="celebrate" id="celebrate"></div>
+
+<div class="board">
+  <h3 id="boardTitle">1ページ目（5ラック）</h3>
+  <div class="howto" style="margin:0 0 10px;">
+    <button class="howto-btn" id="legendBtn">凡例 ▾</button>
+    <div class="hint" id="legend" style="display:none;flex:1;margin:0;">
+      <div>◯：プラス得点</div>
+      <div>ラック（行）をタップで得点が修正可能</div>
+    </div>
+  </div>
+  <table id="boardTable"></table>
+</div>
+
+<p class="foot">点数入力は手書き、名前の下の窓に <b>|・×</b> を書き溜めるだけ（1画=| / 2画=×）。<br>※総当たり精算はシステムが自動で行います。</p>
+<p class="copy">© 2026 P.B.S MANMARU（光輪タイヤ株式会社）</p>
+
+<script>
+const CFG={runoutMultiplier:2,racksPerPage:5};
+const players=[];   // {id,name,total,roCount}
+let editRack=0, frontier=0, runoutId=null, baseOrder=[], reorderMode=false, leftEndChosen=false, prevOrder=[];
+const ordered=()=>baseOrder.map(id=>players.find(p=>p.id===id));
+const P=id=>players.find(p=>p.id===id);
+let cur={};
+const history=[];
+
+/* ===== 保存/復元・新規ゲーム（1台オフライン運用） ===== */
+function serialize(){return{v:1,
+  players:players.map(p=>({id:p.id,name:p.name,total:p.total,roCount:p.roCount,resting:!!p.resting})),
+  baseOrder,editRack,frontier,runoutId,
+  history:history.map(h=>h?{ro:h.ro||null,net:h.net,pts:h.pts,resting:h.resting||[],input:Object.fromEntries(players.map(p=>[p.id,(h.input&&h.input[p.id]?h.input[p.id].picks.map(k=>k.pts):[])]))}:null),
+  cur:Object.fromEntries(players.map(p=>[p.id,(cur[p.id]?cur[p.id].picks.map(k=>k.pts):[])]))};}
+function save(){try{localStorage.setItem('manmaru59',JSON.stringify(serialize()));}catch(_){}}
+function load(){let raw;try{raw=localStorage.getItem('manmaru59');}catch(_){return false;}
+  if(!raw)return false;let d;try{d=JSON.parse(raw);}catch(_){return false;}
+  if(!d||!Array.isArray(d.players)||!d.players.length)return false;
+  players.length=0;d.players.forEach(p=>players.push({id:p.id,name:p.name,total:p.total||0,roCount:p.roCount||0,resting:!!p.resting}));
+  baseOrder=Array.isArray(d.baseOrder)&&d.baseOrder.length?d.baseOrder:players.map(p=>p.id);
+  editRack=d.editRack||0;frontier=d.frontier||0;runoutId=d.runoutId||null;
+  history.length=0;(d.history||[]).forEach(h=>history.push(h?{ro:h.ro||null,net:h.net,pts:h.pts,resting:h.resting||[],input:Object.fromEntries(players.map(p=>[p.id,{picks:((h.input&&h.input[p.id])||[]).map(pt=>({pts:pt}))}]))}:undefined));
+  cur={};players.forEach(p=>cur[p.id]={picks:((d.cur&&d.cur[p.id])||[]).map(pt=>({pts:pt}))});
+  recomputeTotals();return true;}
+function newGame(names){players.length=0;
+  names.forEach((nm,i)=>players.push({id:'p'+(i+1),name:(nm&&nm.trim())||('プレイヤー'+(i+1)),total:0,roCount:0,resting:false}));
+  baseOrder=players.map(p=>p.id);editRack=0;frontier=0;runoutId=null;reorderMode=false;
+  cur={};players.forEach(p=>cur[p.id]={picks:[]});history.length=0;
+  const rb=document.getElementById('reorderBtn');if(rb){rb.classList.remove('on');rb.textContent='✋ 手動で入替（ドラッグ）';}
+  const rh=document.getElementById('reorderHint');if(rh)rh.style.display='none';
+  save();renderAll();}
+function renamePlayers(names){names.forEach((nm,i)=>{if(players[i]&&nm&&nm.trim())players[i].name=nm.trim();});save();renderAll();}
+function nextId(){let mx=0;players.forEach(p=>{const n=parseInt(String(p.id).replace(/^p/,''),10);if(n>mx)mx=n;});return 'p'+(mx+1);}
+function addJoiners(names){                       // リセットせず途中参加で追加（現在ラックから参加）
+  names.slice(0,players.length).forEach((nm,i)=>{if(nm&&nm.trim())players[i].name=nm.trim();});
+  const start=players.length;
+  for(let i=start;i<names.length;i++){const id=nextId(),nm=(names[i]&&names[i].trim())||('プレイヤー'+(i+1));
+    players.push({id,name:nm,total:0,roCount:0,resting:false});baseOrder.push(id);cur[id]={picks:[]};}
+  save();renderAll();}
+
+const rawPts=id=>cur[id].picks.reduce((s,x)=>s+x.pts,0);
+const rackPts=id=>rawPts(id)*(runoutId===id?CFG.runoutMultiplier:1);
+const netOf=(my,all)=>{const n=all.length,o=all.reduce((s,v)=>s+v,0)-my;return my*(n-1)-o;};
+const fmt=v=>v===0?{t:'ー',c:'zero'}:{t:(v>0?'+':'−')+Math.abs(v),c:v>0?'plus':'minus'};
+const markStr=p=>{const x=Math.floor(p/2),b=p%2;return '×'.repeat(x)+'|'.repeat(b)||'0';};
+
+function renderDir(){
+  const pg=Math.floor(editRack/CFG.racksPerPage),fwd=pg%2===0;
+  const names=ordered().map(p=>p.name.replace('さん',''));
+  document.getElementById('dir').innerHTML=`<span class="arw">${fwd?'→':'←'}</span><span class="seq">${names.join(fwd?' → ':' ← ')}</span>`;
+  document.getElementById('rackNo').textContent=editRack+1;
+  document.getElementById('pagePill').textContent=(pg+1)+'ページ目・'+((editRack%CFG.racksPerPage)+1)+'/'+CFG.racksPerPage+'ラック';
+  document.getElementById('boardTitle').textContent=(pg+1)+'ページ目（5ラック）';
+  document.getElementById('confirmBtn').textContent = editRack<frontier ? '修正を保存 →' : '確定 →';
+}
+function swapOrder(a,b){const i=baseOrder.indexOf(a),j=baseOrder.indexOf(b);[baseOrder[i],baseOrder[j]]=[baseOrder[j],baseOrder[i]];renderAll();}
+function attachCardDrag(el,id){let sx,sy,moved,clone;
+  const cleanup=()=>{if(clone){clone.remove();clone=null;}el.style.opacity='';document.querySelectorAll('.pc').forEach(c=>c.classList.remove('drop'));};
+  el.addEventListener('pointerdown',e=>{sx=e.clientX;sy=e.clientY;moved=false;try{el.setPointerCapture(e.pointerId);}catch(_){}});
+  el.addEventListener('pointermove',e=>{if(sx==null)return;
+    if(!moved&&Math.hypot(e.clientX-sx,e.clientY-sy)>8){moved=true;clone=el.cloneNode(true);clone.classList.add('card-clone');clone.style.width=el.offsetWidth+'px';document.body.appendChild(clone);el.style.opacity='.3';}
+    if(moved){clone.style.left=e.clientX+'px';clone.style.top=e.clientY+'px';document.querySelectorAll('.pc').forEach(c=>c.classList.remove('drop'));const t=document.elementFromPoint(e.clientX,e.clientY)?.closest('.pc');if(t&&t!==el)t.classList.add('drop');}});
+  el.addEventListener('pointerup',e=>{const wasMoved=moved;const t=wasMoved?(document.elementFromPoint(e.clientX,e.clientY)?.closest('.pc')):null;
+    cleanup();sx=sy=null;moved=false;
+    if(wasMoved){if(t&&t.dataset.id!==id)swapOrder(id,t.dataset.id);}else{moveToFront(id);}});   // 反映前にクローン除去
+  el.addEventListener('pointercancel',()=>{cleanup();sx=sy=null;moved=false;});}
+
+function renderPlayers(){
+  const wrap=document.getElementById('players'); wrap.innerHTML='';
+  ordered().forEach((p,idx)=>{
+    const f=fmt(p.total),tot=rackPts(p.id);
+    const el=document.createElement('div');
+    el.className='pc'+(runoutId===p.id?' ro':'')+(reorderMode?' rgrip':'')+(reorderMode&&leftEndChosen&&idx===0?' brk':'')+(!reorderMode&&p.resting?' rest':''); el.dataset.id=p.id;
+    let inner=`<div class="nm">${p.name}</div><div class="net ${f.c}">${f.t}</div>`;
+    if(reorderMode){ inner+=(leftEndChosen&&idx===0)?`<div class="grip brk-t">🎱 左端(ブレイク)</div>`:`<div class="grip">タップ=左端 / ドラッグ=入替</div>`; }
+    else if(p.resting){ inner+=`<div class="restbox">💤 休憩中</div><button class="restbtn back">▶ 復帰</button>`; }
+    else{ inner+=`<div class="padwrap"><canvas></canvas><div class="ph">|/×</div></div>
+        <div class="mk">${tot?markStr(tot)+' <small>+'+tot+'</small>':'·'}</div>
+        <button class="restbtn">💤 休憩</button>`; }
+    el.innerHTML=inner; wrap.appendChild(el);
+    if(reorderMode){ attachCardDrag(el,p.id); }
+    else if(p.resting){ const rb=el.querySelector('.restbtn'); if(rb) rb.onclick=()=>toggleRest(p.id); }
+    else{ attachPad(el.querySelector('canvas'),p.id,el); if(cur[p.id].picks.length) ensureUndo(el,p.id); const rb=el.querySelector('.restbtn'); if(rb) rb.onclick=()=>toggleRest(p.id); }
+  });
+}
+function updateCard(id){
+  const el=document.querySelector(`.pc[data-id="${id}"]`); if(!el) return;
+  const tot=rackPts(id),mk=el.querySelector('.mk');
+  if(mk) mk.innerHTML=(tot?markStr(tot)+' <small>+'+tot+'</small>':'·');
+}
+function renderRunsel(){
+  const el=document.getElementById('runsel');
+  const scorers=players.filter(p=>!p.resting&&rawPts(p.id)>0);
+  const eligible=scorers.length===1?scorers[0].id:null;   // マス割＝単独得点者のみ
+  if(runoutId&&runoutId!==eligible) runoutId=null;         // 条件が崩れたら自動解除
+  let h=`<div class="lb">🔥 RUN OUT（マス割）×2</div><div class="btns">`;
+  h+=ordered().map(p=>`<button data-r="${p.id}" class="${runoutId===p.id?'on':''}" ${p.id===eligible?'':'disabled'}>${p.name}</button>`).join('')+'</div>';
+  el.innerHTML=h;
+  el.querySelectorAll('button').forEach(b=>b.onclick=()=>{if(b.disabled)return;runoutId=runoutId===b.dataset.r?null:b.dataset.r; renderRunsel();});
+  players.forEach(p=>updateCard(p.id));
+  document.querySelectorAll('.pc').forEach(c=>c.classList.toggle('ro',c.dataset.id===runoutId));
+  save();
+}
+function renderAll(){ renderDir(); renderPlayers(); renderRunsel(); renderBoard(); updateReorderUI(); }
+
+/* 線分交差判定（×＝交わる2本を自動検出） */
+function segInt(p1,p2,p3,p4){const d=(a,b,c)=>(b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x);
+  const d1=d(p3,p4,p1),d2=d(p3,p4,p2),d3=d(p1,p2,p3),d4=d(p1,p2,p4);
+  return ((d1>0&&d2<0)||(d1<0&&d2>0))&&((d3>0&&d4<0)||(d3<0&&d4>0));}
+const strokesCross=(a,b)=>a.length>1&&b.length>1&&segInt(a[0],a[a.length-1],b[0],b[b.length-1]);
+
+/* 手書き：待ち時間ゼロ。1画=即|(+1)、直前の|と交差したら自動で×(+2)に昇格 */
+function strokeLen(s){let mnx=1e9,mny=1e9,mxx=-1e9,mxy=-1e9;s.forEach(p=>{mnx=Math.min(mnx,p.x);mny=Math.min(mny,p.y);mxx=Math.max(mxx,p.x);mxy=Math.max(mxy,p.y);});return Math.hypot(mxx-mnx,mxy-mny);}
+/* 全手書き窓で指を共有カウント：同時2本以上は描画しない(窓跨ぎ/ピンチ誤入力防止)＋2本指スクロール */
+const padPts=new Map(); let activePad=null,padScroll=false,padSy0=0,padSs0=0;
+const padAvgY=()=>{let s=0,n=0;padPts.forEach(y=>{s+=y;n++;});return n?s/n:0;};
+function attachPad(cv,id,card){
+  const ctx=cv.getContext('2d'),r=cv.getBoundingClientRect();
+  cv.width=r.width*2; cv.height=r.height*2; ctx.scale(2,2); ctx.lineWidth=4; ctx.lineCap='round'; ctx.strokeStyle='#eaf1ff';
+  const ph=card.querySelector('.ph'); let cur_=null,drawing=false;
+  const pos=e=>{const b=cv.getBoundingClientRect();return{x:e.clientX-b.left,y:e.clientY-b.top};};
+  const allStrokes=()=>cur[id].picks.filter(p=>p.strokes).flatMap(p=>p.strokes);
+  const redraw=()=>{ctx.clearRect(0,0,cv.width,cv.height);
+    allStrokes().forEach(st=>{ctx.beginPath();st.forEach((pt,i)=>i?ctx.lineTo(pt.x,pt.y):ctx.moveTo(pt.x,pt.y));ctx.stroke();});
+    ph.style.display=allStrokes().length?'none':'';};
+  const abort=()=>{drawing=false;cur_=null;redraw();};
+  cv._redraw=redraw; card._cv=cv; redraw();
+  cv.addEventListener('pointerdown',e=>{e.stopPropagation(); padPts.set(e.pointerId,e.clientY);
+    if(padPts.size===1){ drawing=true; cur_=[pos(e)]; cv.setPointerCapture(e.pointerId); ph.style.display='none'; activePad={cv,abort}; }
+    else if(padPts.size===2){ if(activePad){activePad.abort();activePad=null;} drawing=false;cur_=null; padScroll=true; padSy0=padAvgY(); padSs0=window.scrollY; }  // 2本目=描画中止→スクロール
+  });
+  cv.addEventListener('pointermove',e=>{ if(padPts.has(e.pointerId)) padPts.set(e.pointerId,e.clientY);
+    if(padScroll&&padPts.size>=2){ window.scrollTo(0, padSs0-(padAvgY()-padSy0)); return; }
+    if(!drawing||padPts.size>1)return; const p=pos(e),a=cur_[cur_.length-1];ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(p.x,p.y);ctx.stroke();cur_.push(p);});
+  const end=e=>{ padPts.delete(e.pointerId);
+    if(padScroll&&padPts.size<2) padScroll=false;
+    if(!drawing)return; drawing=false; const s=cur_; cur_=null; if(activePad&&activePad.cv===cv)activePad=null; if(!s)return;
+    if(strokeLen(s)<8){ redraw(); return; }   // タップ/ダブルタップは記入しない
+    const last=cur[id].picks[cur[id].picks.length-1];
+    if(last&&last.pts===1&&last.strokes&&last.strokes.some(st=>strokesCross(st,s))){ last.pts=2; last.strokes.push(s); }
+    else{ cur[id].picks.push({pts:1,strokes:[s]}); }
+    updateCard(id); ensureUndo(card,id); renderRunsel();};
+  cv.addEventListener('pointerup',end); cv.addEventListener('pointercancel',end);
+}
+function ensureUndo(card,id){
+  if(card.querySelector('.pcundo'))return;
+  const u=document.createElement('button'); u.className='pcundo'; u.textContent='1つ消す';
+  u.onclick=()=>{cur[id].picks.pop(); if(card._cv&&card._cv._redraw)card._cv._redraw(); updateCard(id); renderRunsel(); if(!cur[id].picks.length)u.remove();};
+  card.appendChild(u);
+}
+
+document.getElementById('howtoBtn').onclick=function(){const el=document.getElementById('stephint');const show=el.style.display==='none';el.style.display=show?'':'none';this.textContent='記入方法 '+(show?'▴':'▾');};
+document.getElementById('legendBtn').onclick=function(){const el=document.getElementById('legend');const show=el.style.display==='none';el.style.display=show?'':'none';this.textContent='凡例 '+(show?'▴':'▾');};
+document.getElementById('reorderBtn').onclick=function(){reorderMode=!reorderMode;leftEndChosen=false;
+  if(reorderMode)prevOrder=[...baseOrder];
+  this.classList.toggle('on',reorderMode);
+  this.textContent=reorderMode?'✅ 変更を終える（戻る）':'✋ 順番を変更（左端＝ブレイク権）';
+  updateReorderUI(); renderPlayers();};
+function moveToFront(id){const i=baseOrder.indexOf(id);if(i<0)return;baseOrder.splice(i,1);baseOrder.unshift(id);leftEndChosen=true;renderAll();}
+function forbiddenSet(order){const s=new Set();for(let i=0;i<order.length-1;i++){const a=order[i],b=order[i+1];s.add(a<b?a+'|'+b:b+'|'+a);}return s;}
+function violations(order,forb){let v=0;for(let i=0;i<order.length-1;i++){const a=order[i],b=order[i+1];if(forb.has(a<b?a+'|'+b:b+'|'+a))v++;}return v;}
+function shuffleRest(){const forb=forbiddenSet(prevOrder&&prevOrder.length?prevOrder:baseOrder);
+  const head=baseOrder[0],rest0=baseOrder.slice(1);let best=baseOrder.slice(),bestV=violations(baseOrder,forb);
+  for(let t=0;t<500&&bestV>0;t++){const rest=rest0.slice();for(let i=rest.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[rest[i],rest[j]]=[rest[j],rest[i]];}
+    const cand=[head,...rest],v=violations(cand,forb);if(v<bestV){bestV=v;best=cand;}}
+  baseOrder=best;renderAll();}
+function updateReorderUI(){const rh=document.getElementById('reorderHint'),sb=document.getElementById('shuffleBar');
+  if(!reorderMode){if(rh)rh.style.display='none';if(sb)sb.style.display='none';return;}
+  if(rh){rh.style.display='';const nm=leftEndChosen?((P(baseOrder[0])||{}).name||''):'';
+    rh.innerHTML=`<div>① 左端（ブレイク権＝前回の勝者）を<b style="color:#e8eefc">タップ</b>で選択${leftEndChosen?`：<b style="color:#e8eefc">${nm}</b>`:''}</div><div>② 残りをシャッフル</div><div>※ ドラッグでも入れ替え可</div>`;}
+  if(sb){ if(leftEndChosen){sb.style.display='';sb.innerHTML=`<button id="shuffleRestBtn" class="sh-full">🔀 残りをシャッフル</button>`;const b=document.getElementById('shuffleRestBtn');if(b)b.onclick=shuffleRest;} else sb.style.display='none'; }}
+function toggleRest(id){const p=P(id);if(!p)return;p.resting=!p.resting;
+  if(p.resting){cur[id]={picks:[]};if(runoutId===id)runoutId=null;}
+  renderAll();}
+
+function renderBoard(){
+  const t=document.getElementById('boardTable');const pg=Math.floor(editRack/CFG.racksPerPage),start=pg*CFG.racksPerPage,ord=ordered();
+  let html='<tr><th></th>'+ord.map(p=>`<th>${p.name}</th>`).join('')+'</tr>';
+  for(let r=start;r<start+CFG.racksPerPage;r++){
+    const clickable=r<=frontier&&r!==editRack;
+    let row=`<tr data-r="${r}" class="${r===editRack?'cur':''}${clickable?' clk':''}"><td class="lbl">${r+1}ラック目</td>`;
+    ord.forEach(p=>{let cell='';
+      if(history[r]){
+        if(history[r].net[p.id]===undefined){cell='<span class="zero">－</span>';}   // 途中参加前＝不参加
+        else if(history[r].resting&&history[r].resting.includes(p.id)){cell='<span class="zero">休</span>';}
+        else{const v=history[r].net[p.id],f=fmt(v),mx=Math.max(...players.map(x=>history[r].net[x.id]).filter(x=>x!==undefined));cell=(v===mx&&v>0)?`<span class="circle">${Math.abs(v)}</span>`:`<span class="${f.c}">${f.t}</span>`;} }
+      else if(r===editRack)cell='<span class="zero">…</span>';
+      row+=`<td>${cell}</td>`;});
+    html+=row+'</tr>';}
+  const cum={};players.forEach(p=>cum[p.id]=0);
+  for(let i=0;i<start+CFG.racksPerPage;i++)if(history[i])players.forEach(p=>cum[p.id]+=history[i].net[p.id]);
+  html+='<tr class="totrow"><td class="lbl">累計</td>'+ord.map(p=>{const f=fmt(cum[p.id]);return `<td class="${f.c}">${f.t}</td>`;}).join('')+'</tr>';
+  t.innerHTML=html;
+  t.querySelectorAll('tr.clk').forEach(tr=>tr.onclick=()=>loadRack(+tr.dataset.r));}
+
+document.getElementById('clearBtn').onclick=()=>{players.forEach(p=>cur[p.id]={picks:[]});runoutId=null;renderAll();};
+function ball9(size){const R=size/2,cx=R,cy=R;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="display:block;margin:16px auto 2px;filter:drop-shadow(0 4px 6px rgba(0,0,0,.2));">
+    <defs><clipPath id="b9c"><circle cx="${cx}" cy="${cy}" r="${R-2}"/></clipPath></defs>
+    <circle cx="${cx}" cy="${cy}" r="${R-2}" fill="#fcfaf2" stroke="#cabf9f" stroke-width="1.5"/>
+    <rect x="0" y="${cy-size*0.27}" width="${size}" height="${size*0.54}" fill="#f2c400" clip-path="url(#b9c)"/>
+    <circle cx="${cx}" cy="${cy}" r="${size*0.235}" fill="#fff"/>
+    <text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central" font-family="Georgia,serif" font-weight="700" font-size="${size*0.3}" fill="#1a1a1a">9</text>
+    <ellipse cx="${cx-size*0.17}" cy="${cy-size*0.2}" rx="${size*0.15}" ry="${size*0.09}" fill="rgba(255,255,255,.6)"/></svg>`;}
+function celebrate(name,pts,count){
+  const el=document.getElementById('celebrate');const emo=['🎉','🎊','✨','🏆','⭐','🟡','🔵'];
+  let conf='';for(let i=0;i<40;i++){const l=Math.random()*100,d=Math.random()*0.7,dur=1.7+Math.random()*1.6,sz=13+Math.random()*16,e=emo[Math.floor(Math.random()*emo.length)];
+    conf+=`<span class="confetti" style="left:${l}%;font-size:${sz}px;animation-delay:${d}s;animation-duration:${dur}s;">${e}</span>`;}
+  const crown=`<svg class="crown" viewBox="0 0 100 74"><path d="M8 62 L20 26 L36 46 L50 14 L64 46 L80 26 L92 62 Z" fill="#e6b400" stroke="#b98f00" stroke-width="2.5" stroke-linejoin="round"/><rect x="12" y="60" width="76" height="9" rx="3" fill="#e6b400"/></svg>`;
+  el.innerHTML=conf+`<div class="cel-card">${crown}
+    <div class="t1">RUN OUT</div><div class="t2">ACHIEVED!</div>
+    <div class="cel-mid">${ball9(72)}<div class="cnt2"><span class="cnt-lbl">通算</span><span class="cnt-num">${count}</span><span class="cnt-lbl">回目</span></div></div>
+    <div class="who2">${name}　<span class="pt2">+${pts}点</span></div>
+    <div class="cap">ランナウト達成！おめでとうございます！</div>
+    <button class="close">CLOSE</button></div>`;
+  el.classList.add('on');el.onclick=()=>el.classList.remove('on');
+  clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('on'),6000);
+}
+function copyPicks(picks){return (picks||[]).map(k=>({pts:k.pts,strokes:k.strokes?k.strokes.map(s=>s.map(pt=>({x:pt.x,y:pt.y}))):undefined}));}
+function recomputeTotals(){players.forEach(p=>{p.total=0;p.roCount=0;});
+  history.forEach(h=>{if(h){players.forEach(p=>p.total+=(h.net[p.id]||0)); if(h.ro){const rp=players.find(x=>x.id===h.ro);if(rp)rp.roCount++;}}});}
+function loadRack(r){editRack=r; const inp=history[r]&&history[r].input;
+  players.forEach(p=>cur[p.id]={picks: inp&&inp[p.id]?copyPicks(inp[p.id].picks):[]});
+  runoutId=(history[r]&&history[r].ro)||null;
+  if(history[r]&&history[r].resting){const set=new Set(history[r].resting);players.forEach(p=>p.resting=set.has(p.id));}
+  renderAll();}
+document.getElementById('confirmBtn').onclick=()=>{
+  const roId=runoutId, roName=roId?P(roId).name:null, roPts=roId?rackPts(roId):0;
+  const active=players.filter(p=>!p.resting);            // 休憩者を除いた N-1(以下) 人で精算
+  const apts=active.map(p=>rackPts(p.id));
+  const net={},ptsObj={},input={};
+  players.forEach(p=>{net[p.id]=0;ptsObj[p.id]=rackPts(p.id);input[p.id]={picks:copyPicks(cur[p.id].picks)};});
+  active.forEach((p,i)=>net[p.id]=netOf(apts[i],apts));   // 休憩者は net=0（増減なし）
+  history[editRack]={input,ro:roId||null,net,pts:ptsObj,resting:players.filter(p=>p.resting).map(p=>p.id)};
+  if(editRack===frontier) frontier++;
+  recomputeTotals();
+  const roCountNow=roId?P(roId).roCount:0;
+  loadRack(frontier);                       // 過去修正時も最新(新規)ラックへ戻る・他ラックは保持
+  if(roId) celebrate(roName,roPts,roCountNow);};
+
+/* ===== メンバー設定モーダル ===== */
+function collectNames(){return [...document.querySelectorAll('.nameInput')].map(i=>i.value);}
+function buildSetup(count,names){document.getElementById('mCount').textContent=count;
+  const wrap=document.getElementById('nameInputs');wrap.innerHTML='';
+  for(let i=0;i<count;i++){const v=((names&&names[i])||'').replace(/"/g,'&quot;');
+    wrap.insertAdjacentHTML('beforeend',`<input class="nameInput" placeholder="プレイヤー${i+1}" value="${v}">`);}
+  const rn=document.getElementById('setupRename');rn.style.display=(count===players.length&&players.length>0)?'':'none';
+  const ad=document.getElementById('setupAdd');if(ad)ad.style.display=(count>players.length&&players.length>0)?'':'none';}
+function openSetup(){const names=players.map(p=>p.name);buildSetup(names.length||4,names);document.getElementById('setup').classList.add('on');}
+document.getElementById('gearBtn').onclick=openSetup;
+document.getElementById('mMinus').onclick=()=>{const c=+document.getElementById('mCount').textContent;if(c>2)buildSetup(c-1,collectNames());};
+document.getElementById('mPlus').onclick=()=>{const c=+document.getElementById('mCount').textContent;if(c<8)buildSetup(c+1,collectNames());};
+document.getElementById('setupCancel').onclick=()=>document.getElementById('setup').classList.remove('on');
+document.getElementById('setupStart').onclick=()=>{if(!confirm('現在のスコアをリセットして新規ゲームを開始します。よろしいですか？'))return;newGame(collectNames());document.getElementById('setup').classList.remove('on');};
+document.getElementById('setupRename').onclick=()=>{renamePlayers(collectNames());document.getElementById('setup').classList.remove('on');};
+document.getElementById('setupAdd').onclick=()=>{addJoiners(collectNames());document.getElementById('setup').classList.remove('on');};
+
+/* ===== 起動：保存があれば再開、無ければ4人でスタート ===== */
+if(!load()) newGame(['Aさん','Bさん','Cさん','Dさん']); else renderAll();
+</script>
+</body>
+</html>
