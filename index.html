@@ -447,12 +447,17 @@ function renderBoard(){
   const cp=sc.querySelector('.page-panel.curpage'),slide=document.getElementById('slideBoard');
   if(cp&&slide){ slide.scrollTop=cp.offsetTop-slide.offsetTop-6; }   // 現在ページを先頭へ
 }
-/* ===== 入力/成績表の2スライド切替（タブ＋左右スワイプ） ===== */
+/* ===== 入力/成績表の2スライド切替（タブ＝確実 / 左右スワイプ＝補助） ===== */
 const deck=document.getElementById('deck');
-function goSlide(which){const s=document.getElementById(which==='board'?'slideBoard':'slideInput');if(s&&deck)deck.scrollTo({left:s.offsetLeft,behavior:'smooth'});}
-function syncTabs(){if(!deck)return;const board=deck.scrollLeft>deck.clientWidth*0.5;
+function markTab(board){
   document.getElementById('tabInput').classList.toggle('on',!board);
   document.getElementById('tabBoard').classList.toggle('on',board);}
+function goSlide(which){ if(!deck)return; const board=which==='board';
+  const x=board?deck.clientWidth:0;
+  deck.scrollLeft=x;                                   // iPad Safari対策：scrollLeft直接指定で確実に移動
+  try{deck.scrollTo({left:x,behavior:'smooth'});}catch(_){}
+  markTab(board); }
+function syncTabs(){if(!deck)return;markTab(deck.scrollLeft>deck.clientWidth*0.5);}
 if(deck){
   document.getElementById('tabInput').onclick=()=>goSlide('input');
   document.getElementById('tabBoard').onclick=()=>goSlide('board');
