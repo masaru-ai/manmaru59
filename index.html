@@ -30,7 +30,7 @@
   .dir .arw{font-size:40px;font-weight:900;color:var(--gold);line-height:1;}
   .dir .seq{font-size:21px;font-weight:900;}
   .ordctl{display:flex;gap:8px;margin:8px 14px 0;}
-  .ordctl button{flex:1;padding:8px 0;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--muted);font-weight:800;font-size:15px;}
+  .ordctl button{flex:1;padding:12px 0;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--muted);font-weight:800;font-size:18px;}
   .ordctl button.on{background:var(--blue);border-color:var(--blue-lt);color:#fff;}
   .reorderHint{margin:8px 14px 0;font-size:14px;color:var(--green);text-align:left;background:rgba(37,194,107,.1);border:1px solid rgba(37,194,107,.35);border-radius:10px;padding:8px 12px;line-height:1.4;}
   .reorderHint div{padding:2px 0;}
@@ -56,29 +56,29 @@
   .mini-sh{background:var(--blue);border:1px solid var(--blue-lt);color:#fff;border-radius:8px;padding:5px 12px;font-weight:800;font-size:12px;margin-left:4px;}
   .pc.rest{opacity:.6;}
   .restbox{margin-top:7px;flex:1;min-height:70px;display:flex;align-items:center;justify-content:center;background:#0b1428;border:1.5px dashed var(--line);border-radius:10px;color:var(--muted);font-weight:800;font-size:13px;}
-  .restbtn{margin-top:6px;width:100%;font-size:11px;font-weight:800;padding:5px 0;border-radius:8px;border:1px solid var(--line);background:var(--panel2);color:var(--muted);}
+  .restbtn{margin-top:6px;width:100%;font-size:15px;font-weight:800;padding:9px 0;border-radius:8px;border:1px solid var(--line);background:var(--panel2);color:var(--muted);}
   .restbtn.back{color:var(--green);border-color:rgba(37,194,107,.4);}
   .card-clone{pointer-events:none;position:fixed;z-index:99;transform:translate(-50%,-50%);opacity:.92;box-shadow:0 8px 18px rgba(0,0,0,.5);}
 
   .padwrap{position:relative;margin-top:7px;flex:1;min-height:70px;background:#0b1428;border:1.5px dashed var(--line);border-radius:10px;overflow:hidden;}
   .padwrap canvas{width:100%;height:100%;display:block;touch-action:none;}
   .padwrap .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#2a3a5e;font-size:34px;font-weight:800;pointer-events:none;}
-  .mk{margin-top:6px;font-family:ui-monospace,monospace;letter-spacing:2px;font-size:21px;color:var(--ink);min-height:20px;}
+  .mk{margin-top:6px;font-family:ui-monospace,monospace;letter-spacing:2px;font-size:26px;color:var(--ink);min-height:24px;}
   .mk small{color:var(--gold);font-family:inherit;font-weight:900;letter-spacing:0;}
-  .pcundo{margin-top:4px;font-size:13px;color:var(--muted);background:transparent;border:none;text-decoration:underline;}
+  .pcundo{margin-top:5px;width:100%;font-size:16px;font-weight:800;color:var(--muted);background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:7px 0;}
 
   .runsel{margin:12px 14px 0;}
-  .runsel .lb{font-size:15px;color:var(--gold);font-weight:800;margin-bottom:8px;text-align:center;}
+  .runsel .lb{font-size:18px;color:var(--gold);font-weight:800;margin-bottom:8px;text-align:center;}
   .runsel .btns{display:grid;grid-template-columns:repeat(auto-fit,minmax(84px,1fr));gap:8px;}
-  .runsel button{padding:9px 0;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--muted);font-weight:800;font-size:16px;}
+  .runsel button{padding:14px 0;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--muted);font-weight:800;font-size:20px;}
   .runsel button.on{background:linear-gradient(90deg,rgba(230,180,0,.35),rgba(230,180,0,.08));border-color:var(--gold-dk);color:var(--gold);box-shadow:0 0 10px rgba(230,180,0,.2);}
   .runsel button:disabled{opacity:.28;}
 
   .actions{display:flex;gap:10px;margin:14px 14px 0;}
   .actions .revert{flex:0 0 96px;padding:14px 0;border-radius:14px;border:1px solid var(--line);background:transparent;color:var(--muted);font-weight:800;font-size:15px;}
   .actions .revert:disabled{opacity:.3;}
-  .actions .clear{flex:0 0 82px;padding:14px 0;border-radius:14px;border:1px solid var(--line);background:transparent;color:var(--muted);font-weight:800;font-size:15px;}
-  .actions .confirm{flex:1;padding:14px 0;border-radius:14px;border:none;background:linear-gradient(90deg,var(--gold),var(--gold-dk));color:#241c00;font-weight:900;font-size:20px;}
+  .actions .clear{flex:1;padding:14px 0;border-radius:14px;border:1px solid var(--line);background:transparent;color:var(--muted);font-weight:800;font-size:16px;}
+  .actions .confirm{flex:3;padding:14px 0;border-radius:14px;border:none;background:linear-gradient(90deg,var(--gold),var(--gold-dk));color:#241c00;font-weight:900;font-size:22px;}
 
   .board{margin:16px 14px 0;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px;overflow-x:auto;}
   .gear{margin-left:auto;font-size:13px;color:var(--muted);background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-weight:800;white-space:nowrap;flex-shrink:0;}
@@ -100,12 +100,21 @@
   .modal-card .warn{font-size:11px;color:var(--minus);text-align:center;margin-top:10px;}
   .board h3{margin:0 0 4px;font-size:16px;}
   .board .hint{font-size:13px;color:var(--muted);margin-bottom:10px;}
-  table{width:100%;border-collapse:collapse;font-size:17px;}
-  th,td{padding:8px 4px;text-align:center;border-bottom:1px solid var(--line);}
-  th{color:var(--muted);font-weight:700;font-size:14px;}td.lbl{color:var(--muted);text-align:left;font-size:14px;}
+  /* 盤面：ページ単位スナップ（横スライド / 縦スライド 切替） */
+  .board-scroller{position:relative;}
+  .board-scroller.h{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding-bottom:6px;scrollbar-width:thin;}
+  .board-scroller.h .page-panel{flex:0 0 84%;scroll-snap-align:start;}
+  .board-scroller.v{max-height:74vh;overflow-y:auto;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;padding-right:4px;}
+  .board-scroller.v .page-panel{scroll-snap-align:start;margin-bottom:14px;}
+  .page-panel{background:#0e1a33;border:1px solid var(--line);border-radius:12px;padding:10px 12px;}
+  .page-panel.curpage{border-color:var(--blue-lt);box-shadow:0 0 0 1px var(--blue-lt) inset;}
+  .page-panel h4{margin:0 0 8px;font-size:17px;font-weight:900;color:var(--gold);}
+  table{width:100%;border-collapse:collapse;font-size:19px;}
+  th,td{padding:13px 6px;text-align:center;border-bottom:1px solid var(--line);}
+  th{color:var(--muted);font-weight:700;font-size:16px;}td.lbl{color:var(--muted);text-align:left;font-size:16px;white-space:nowrap;}
   tr.cur td{background:rgba(77,155,255,.10);}
   tr.clk{cursor:pointer;}tr.clk:active td{background:rgba(77,155,255,.14);}
-  .circle{display:inline-flex;align-items:center;justify-content:center;min-width:32px;height:32px;padding:0 5px;border:2px solid var(--gold);border-radius:999px;color:var(--gold);font-weight:900;}
+  .circle{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:38px;padding:0 6px;border:2px solid var(--gold);border-radius:999px;color:var(--gold);font-weight:900;}
   .totrow td{border-top:2px solid var(--line);border-bottom:none;padding-top:10px;font-weight:900;}
   .foot{margin:14px 14px 0;font-size:11px;color:var(--muted);text-align:center;line-height:1.6;}
   .copy{margin:8px 14px 14px;font-size:10px;color:#5a6b8c;text-align:center;letter-spacing:.02em;}
@@ -187,19 +196,21 @@
 <div class="celebrate" id="celebrate"></div>
 
 <div class="board">
-  <h3 id="boardTitle">1ページ目（5ラック）</h3>
+  <h3 id="boardTitle">成績表</h3>
   <div class="howto" style="margin:0 0 10px;">
     <button class="howto-btn" id="legendBtn">凡例 ▾</button>
-    <div class="hint" id="legend" style="display:none;flex:1;margin:0;">
+    <button class="howto-btn" id="boardModeBtn" style="margin-left:auto;">◫ 横スライド</button>
+    <div class="hint" id="legend" style="display:none;flex-basis:100%;margin:6px 0 0;">
       <div>◯：プラス得点</div>
       <div>ラック（行）をタップで得点が修正可能</div>
+      <div>ページ単位でスライド（横/縦は右のボタンで切替）</div>
     </div>
   </div>
-  <table id="boardTable"></table>
+  <div id="boardScroller" class="board-scroller"></div>
 </div>
 
 <p class="foot">点数入力は手書き、名前の下の窓に <b>|・×</b> を書き溜めるだけ（1画=| / 2画=×）。<br>※総当たり精算はシステムが自動で行います。</p>
-<p class="copy">© 2026 P.B.S MANMARU（光輪タイヤ株式会社）　build&nbsp;2026-08-08&nbsp;大きな文字＋1画面&nbsp;JST</p>
+<p class="copy">© 2026 P.B.S MANMARU（光輪タイヤ株式会社）　build&nbsp;2026-08-08&nbsp;ボタン拡大＋盤面ページスライド&nbsp;JST</p>
 
 <script>
 const CFG={runoutMultiplier:2,racksPerPage:5};
@@ -262,7 +273,7 @@ function renderDir(){
   document.getElementById('dir').innerHTML=`<span class="arw">${fwd?'→':'←'}</span><span class="seq">${names.join(fwd?' → ':' ← ')}</span>`;
   document.getElementById('rackNo').textContent=editRack+1;
   document.getElementById('pagePill').textContent=(pg+1)+'ページ目・'+((editRack%CFG.racksPerPage)+1)+'/'+CFG.racksPerPage+'ラック';
-  document.getElementById('boardTitle').textContent=(pg+1)+'ページ目（5ラック）';
+  document.getElementById('boardTitle').textContent='成績表 — 現在 '+(pg+1)+'ページ目';
   document.getElementById('confirmBtn').textContent = editRack<frontier ? '修正を保存 →' : '確定 →';
 }
 function swapOrder(a,b){const i=baseOrder.indexOf(a),j=baseOrder.indexOf(b);[baseOrder[i],baseOrder[j]]=[baseOrder[j],baseOrder[i]];renderAll();}
@@ -395,25 +406,40 @@ function toggleRest(id){const p=P(id);if(!p)return;p.resting=!p.resting;
   if(p.resting){cur[id]={picks:[]};if(runoutId===id)runoutId=null;}
   renderAll();}
 
-function renderBoard(){
-  const t=document.getElementById('boardTable');const pg=Math.floor(editRack/CFG.racksPerPage),start=pg*CFG.racksPerPage,ord=ordered();
-  let html='<tr><th></th>'+ord.map(p=>`<th>${p.name}</th>`).join('')+'</tr>';
+let boardMode=(localStorage.getItem('manmaru59_bmode')==='v')?'v':'h';   // 'h'=横スライド / 'v'=縦スライド
+function pagePanel(p){
+  const start=p*CFG.racksPerPage,ord=ordered(),curPage=Math.floor(editRack/CFG.racksPerPage);
+  let html=`<div class="page-panel${p===curPage?' curpage':''}"><h4>${p+1}ページ目</h4><table>`;
+  html+='<tr><th></th>'+ord.map(pl=>`<th>${pl.name}</th>`).join('')+'</tr>';
   for(let r=start;r<start+CFG.racksPerPage;r++){
     const clickable=r<=frontier&&r!==editRack;
-    let row=`<tr data-r="${r}" class="${r===editRack?'cur':''}${clickable?' clk':''}"><td class="lbl">${r+1}ラック目</td>`;
-    ord.forEach(p=>{let cell='';
+    let row=`<tr data-r="${r}" class="${r===editRack?'cur':''}${clickable?' clk':''}"><td class="lbl">${r+1}</td>`;
+    ord.forEach(pl=>{let cell='';
       if(history[r]){
-        if(history[r].net[p.id]===undefined){cell='<span class="zero">－</span>';}   // 途中参加前＝不参加
-        else if(history[r].resting&&history[r].resting.includes(p.id)){cell='<span class="zero">休</span>';}
-        else{const v=history[r].net[p.id],f=fmt(v),mx=Math.max(...players.map(x=>history[r].net[x.id]).filter(x=>x!==undefined));cell=(v===mx&&v>0)?`<span class="circle">${Math.abs(v)}</span>`:`<span class="${f.c}">${f.t}</span>`;} }
+        if(history[r].net[pl.id]===undefined){cell='<span class="zero">－</span>';}   // 途中参加前＝不参加
+        else if(history[r].resting&&history[r].resting.includes(pl.id)){cell='<span class="zero">休</span>';}
+        else{const v=history[r].net[pl.id],f=fmt(v),mx=Math.max(...players.map(x=>history[r].net[x.id]).filter(x=>x!==undefined));cell=(v===mx&&v>0)?`<span class="circle">${Math.abs(v)}</span>`:`<span class="${f.c}">${f.t}</span>`;} }
       else if(r===editRack)cell='<span class="zero">…</span>';
       row+=`<td>${cell}</td>`;});
     html+=row+'</tr>';}
-  const cum={};players.forEach(p=>cum[p.id]=0);
-  for(let i=0;i<start+CFG.racksPerPage;i++)if(history[i])players.forEach(p=>cum[p.id]+=history[i].net[p.id]);
-  html+='<tr class="totrow"><td class="lbl">累計</td>'+ord.map(p=>{const f=fmt(cum[p.id]);return `<td class="${f.c}">${f.t}</td>`;}).join('')+'</tr>';
-  t.innerHTML=html;
-  t.querySelectorAll('tr.clk').forEach(tr=>tr.onclick=()=>loadRack(+tr.dataset.r));}
+  const cum={};players.forEach(pl=>cum[pl.id]=0);
+  for(let i=0;i<start+CFG.racksPerPage;i++)if(history[i])players.forEach(pl=>cum[pl.id]+=history[i].net[pl.id]);
+  html+='<tr class="totrow"><td class="lbl">累計</td>'+ord.map(pl=>{const f=fmt(cum[pl.id]);return `<td class="${f.c}">${f.t}</td>`;}).join('')+'</tr>';
+  return html+'</table></div>';
+}
+function renderBoard(){
+  const sc=document.getElementById('boardScroller');
+  sc.className='board-scroller '+boardMode;
+  const lastPage=Math.floor(Math.max(frontier,editRack)/CFG.racksPerPage);
+  let html='';for(let p=0;p<=lastPage;p++)html+=pagePanel(p);
+  sc.innerHTML=html;
+  sc.querySelectorAll('tr.clk').forEach(tr=>tr.onclick=()=>loadRack(+tr.dataset.r));
+  const cp=sc.querySelector('.page-panel.curpage');
+  if(cp){ if(boardMode==='h')sc.scrollLeft=cp.offsetLeft; else sc.scrollTop=cp.offsetTop; }
+}
+const bmb=document.getElementById('boardModeBtn');
+if(bmb){ bmb.textContent=boardMode==='h'?'◫ 横スライド':'▤ 縦スライド';
+  bmb.onclick=function(){boardMode=boardMode==='h'?'v':'h';localStorage.setItem('manmaru59_bmode',boardMode);this.textContent=boardMode==='h'?'◫ 横スライド':'▤ 縦スライド';renderBoard();}; }
 
 document.getElementById('clearBtn').onclick=()=>{players.forEach(p=>cur[p.id]={picks:[]});runoutId=null;renderAll();};
 function ball9(size){const R=size/2,cx=R,cy=R;
