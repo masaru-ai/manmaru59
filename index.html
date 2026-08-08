@@ -42,7 +42,7 @@
   .stephint b{color:var(--ink);}
 
   .players{display:grid;grid-template-columns:repeat(auto-fit,minmax(84px,1fr));gap:8px;margin:6px 14px 0;}
-  .pc{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:9px 6px 9px;text-align:center;}
+  .pc{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:9px 6px 9px;text-align:center;display:flex;flex-direction:column;}
   .pc.ro{border-color:var(--gold);box-shadow:0 0 0 2px rgba(230,180,0,.5) inset;}
   .pc.ro::before{content:'🔥';position:absolute;top:5px;right:7px;font-size:13px;line-height:1;}
   .pc.drop{border-color:var(--green);box-shadow:0 0 0 2px rgba(37,194,107,.4) inset;transform:translateY(-2px);}
@@ -59,7 +59,7 @@
   .restbtn.back{color:var(--green);border-color:rgba(37,194,107,.4);}
   .card-clone{pointer-events:none;position:fixed;z-index:99;transform:translate(-50%,-50%);opacity:.92;box-shadow:0 8px 18px rgba(0,0,0,.5);}
 
-  .padwrap{position:relative;margin-top:7px;height:88px;background:#0b1428;border:1.5px dashed var(--line);border-radius:10px;overflow:hidden;}
+  .padwrap{position:relative;margin-top:7px;height:clamp(130px,22vh,240px);background:#0b1428;border:1.5px dashed var(--line);border-radius:10px;overflow:hidden;}
   .padwrap canvas{width:100%;height:100%;display:block;touch-action:none;}
   .padwrap .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#2a3a5e;font-size:26px;font-weight:800;pointer-events:none;}
   .mk{margin-top:6px;font-family:ui-monospace,monospace;letter-spacing:2px;font-size:16px;color:var(--ink);min-height:20px;}
@@ -196,7 +196,7 @@
 </div>
 
 <p class="foot">点数入力は手書き、名前の下の窓に <b>|・×</b> を書き溜めるだけ（1画=| / 2画=×）。<br>※総当たり精算はシステムが自動で行います。</p>
-<p class="copy">© 2026 P.B.S MANMARU（光輪タイヤ株式会社）　build&nbsp;2026-08-06&nbsp;17:33&nbsp;JST</p>
+<p class="copy">© 2026 P.B.S MANMARU（光輪タイヤ株式会社）　build&nbsp;2026-08-08&nbsp;11:32&nbsp;JST</p>
 
 <script>
 const CFG={runoutMultiplier:2,racksPerPage:5};
@@ -468,6 +468,13 @@ document.getElementById('setupAdd').onclick=()=>{addJoiners(collectNames());docu
 
 /* ===== 起動：保存があれば再開、無ければ4人でスタート ===== */
 if(!load()) newGame(['Aさん','Bさん','Cさん','Dさん']); else renderAll();
+
+/* スリープ防止(画面を消さない)＝長時間対局向け。電源接続推奨 */
+let wakeLock=null;
+async function requestWake(){try{if('wakeLock'in navigator){wakeLock=await navigator.wakeLock.request('screen');wakeLock.addEventListener('release',function(){wakeLock=null;});}}catch(_){}}
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&!wakeLock)requestWake();});
+window.addEventListener('pointerdown',function(){if(!wakeLock)requestWake();},{once:true});
+requestWake();
 </script>
 </body>
 </html>
