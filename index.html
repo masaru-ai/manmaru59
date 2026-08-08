@@ -14,8 +14,7 @@
   body{margin:0 auto;max-width:900px;background:var(--bg);color:var(--ink);padding-bottom:40px;
     font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;user-select:none;}
   .plus{color:var(--plus);}.minus{color:var(--minus);}.zero{color:var(--zero);}
-  html{scroll-snap-type:y mandatory;}   /* 入力・各ページを1画面ごとにカチッとスナップ */
-  .screen1{height:100dvh;display:flex;flex-direction:column;overflow:hidden;scroll-snap-align:start;scroll-snap-stop:always;}   /* 入力は確定ボタンまでで1画面 */
+  .screen1{height:100dvh;display:flex;flex-direction:column;overflow:hidden;}   /* 入力は確定ボタンまでで1画面(全体はスナップさせない) */
 
   .top{position:sticky;top:0;z-index:6;background:linear-gradient(180deg,#0d1830,#0f172a);border-bottom:1px solid var(--line);padding:9px 14px;}
   .brand{display:flex;align-items:center;gap:6px;font-weight:800;font-size:18px;flex-wrap:nowrap;min-width:0;}
@@ -81,7 +80,8 @@
   .actions .clear{flex:1;padding:14px 0;border-radius:14px;border:1px solid var(--line);background:transparent;color:var(--muted);font-weight:800;font-size:16px;}
   .actions .confirm{flex:3;padding:14px 0;border-radius:14px;border:none;background:linear-gradient(90deg,var(--gold),var(--gold-dk));color:#241c00;font-weight:900;font-size:22px;}
 
-  .board{margin:0;background:transparent;border:none;border-radius:0;padding:0;}
+  /* 表は「内部だけ」で縦スライド（この箱の中でページがカチッと切替。全体・入力は動かない） */
+  .board{margin:0;padding:0;background:transparent;border:none;border-radius:0;height:100dvh;overflow-y:auto;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;}
   .gear{margin-left:auto;font-size:13px;color:var(--muted);background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-weight:800;white-space:nowrap;flex-shrink:0;}
   .modal{position:fixed;inset:0;z-index:120;display:none;align-items:center;justify-content:center;background:rgba(6,12,26,.75);padding:18px;}
   .modal.on{display:flex;}
@@ -105,15 +105,16 @@
   /* 成績表：1ページ(5ラック)＝1画面、ページごとにカチッとスナップ */
   .page-panel{min-height:100dvh;scroll-snap-align:start;scroll-snap-stop:always;display:flex;flex-direction:column;justify-content:center;padding:22px 16px;border-top:1px solid var(--line);}
   .page-panel.curpage{background:rgba(77,155,255,.06);}
-  .page-panel h4{margin:0 0 12px;font-size:22px;font-weight:900;color:var(--gold);text-align:center;}
+  .page-panel h4{margin:0 0 14px;font-size:26px;font-weight:900;color:var(--gold);text-align:center;}
   .page-panel.curpage h4::after{content:' ● 現在';font-size:14px;color:var(--blue-lt);}
-  table{width:100%;border-collapse:collapse;font-size:19px;}
-  th,td{padding:13px 6px;text-align:center;border-bottom:1px solid var(--line);}
-  th{color:var(--muted);font-weight:700;font-size:16px;}td.lbl{color:var(--muted);text-align:left;font-size:16px;white-space:nowrap;}
+  table{width:100%;border-collapse:collapse;font-size:28px;table-layout:fixed;}
+  th,td{padding:18px 8px;text-align:center;border-bottom:1px solid var(--line);}
+  th{color:var(--muted);font-weight:800;font-size:22px;}
+  td.lbl,th.lbl{width:20%;color:var(--muted);text-align:left;font-size:20px;white-space:nowrap;}
   tr.cur td{background:rgba(77,155,255,.10);}
   tr.clk{cursor:pointer;}tr.clk:active td{background:rgba(77,155,255,.14);}
-  .circle{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:38px;padding:0 6px;border:2px solid var(--gold);border-radius:999px;color:var(--gold);font-weight:900;}
-  .totrow td{border-top:2px solid var(--line);border-bottom:none;padding-top:10px;font-weight:900;}
+  .circle{display:inline-flex;align-items:center;justify-content:center;min-width:52px;height:52px;padding:0 8px;border:3px solid var(--gold);border-radius:999px;color:var(--gold);font-weight:900;}
+  .totrow td{border-top:2px solid var(--line);border-bottom:none;padding-top:14px;font-weight:900;font-size:30px;}
   .foot{margin:14px 14px 0;font-size:11px;color:var(--muted);text-align:center;line-height:1.6;}
   .copy{margin:8px 14px 14px;font-size:10px;color:#5a6b8c;text-align:center;letter-spacing:.02em;}
 
@@ -197,7 +198,7 @@
   <div id="boardScroller"></div>
 </div>
 
-<p class="copy" style="text-align:center;margin:10px 14px 20px;">© 2026 P.B.S MANMARU（光輪タイヤ株式会社）　build&nbsp;2026-08-08&nbsp;成績表フルスクリーン・スナップ版&nbsp;JST</p>
+<p class="copy" style="text-align:center;margin:10px 14px 20px;">© 2026 P.B.S MANMARU（光輪タイヤ株式会社）　build&nbsp;2026-08-08&nbsp;表=内部スクロール＋大きな文字&nbsp;JST</p>
 
 <script>
 const CFG={runoutMultiplier:2,racksPerPage:5};
@@ -394,7 +395,7 @@ function toggleRest(id){const p=P(id);if(!p)return;p.resting=!p.resting;
 function pagePanel(p){
   const start=p*CFG.racksPerPage,ord=ordered(),curPage=Math.floor(editRack/CFG.racksPerPage);
   let html=`<div class="page-panel${p===curPage?' curpage':''}"><h4>${p+1}ページ目</h4><table>`;
-  html+='<tr><th></th>'+ord.map(pl=>`<th>${pl.name}</th>`).join('')+'</tr>';
+  html+='<tr><th class="lbl">ラック</th>'+ord.map(pl=>`<th>${pl.name}</th>`).join('')+'</tr>';
   for(let r=start;r<start+CFG.racksPerPage;r++){
     const clickable=r<=frontier&&r!==editRack;
     let row=`<tr data-r="${r}" class="${r===editRack?'cur':''}${clickable?' clk':''}"><td class="lbl">${r+1}</td>`;
