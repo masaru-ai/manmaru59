@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>MANMARU 59 — 表示モニター（観戦用）</title>
+<style>
+  :root{--blue:#0061b0;--blue-lt:#4d9bff;--gold:#e6b400;--gold-dk:#b98f00;--bg:#0b1220;--panel:#131f38;--panel2:#1a2a49;--line:#2b3d63;--ink:#eef3ff;--muted:#8fa4cc;--plus:#ffcf2e;--minus:#ff8a8a;--zero:#8fa4cc;--green:#25c26b;}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-user-select:none;user-select:none;}
+  html,body{height:100%;}
+  body{background:radial-gradient(circle at 50% -10%,#16233f,#0b1220 60%);color:var(--ink);height:100dvh;display:flex;flex-direction:column;overflow:hidden;
+    font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans",-apple-system,BlinkMacSystemFont,sans-serif;}
+  .plus{color:var(--plus);}.minus{color:var(--minus);}.zero{color:var(--zero);}
+  header{display:flex;align-items:center;gap:1.4vw;padding:1.4vh 2.4vw;border-bottom:2px solid var(--line);}
+  .logo{display:flex;align-items:center;gap:.7vw;font-weight:900;font-size:3.2vh;}
+  .logo .dot{width:1.5vh;height:1.5vh;border-radius:50%;background:var(--gold);box-shadow:0 0 1.6vh var(--gold);}
+  .logo small{color:var(--muted);font-weight:800;font-size:2.4vh;}
+  .rack{margin-left:2vw;font-weight:900;font-size:4vh;}.rack b{color:var(--gold);}
+  .dir{display:flex;align-items:center;gap:.6vw;background:var(--panel2);border:1px solid var(--line);border-radius:99px;padding:.6vh 1.4vw;font-weight:900;font-size:2.6vh;}
+  .dir .arw{color:var(--gold);font-size:3.4vh;}
+  .live{margin-left:auto;display:flex;align-items:center;gap:.6vw;font-size:2vh;color:var(--muted);font-weight:800;}
+  .live .l{width:1.1vh;height:1.1vh;border-radius:50%;background:#3a4a6b;}
+  .live.on .l{background:var(--green);box-shadow:0 0 1.4vh var(--green);}
+
+  main{flex:1;display:flex;flex-direction:column;padding:2.4vh 3vw;min-height:0;gap:1.4vh;}
+  .h2{font-size:2.6vh;color:var(--muted);font-weight:800;letter-spacing:.06em;}
+  .rank{flex:1;display:flex;flex-direction:column;gap:1.4vh;min-height:0;}
+  .row{display:flex;align-items:center;gap:1.6vw;background:var(--panel);border:1px solid var(--line);border-radius:1.8vh;padding:1.6vh 1.8vw;flex:1;}
+  .row.first{border-color:var(--blue-lt);background:linear-gradient(90deg,rgba(77,155,255,.14),rgba(77,155,255,.02));box-shadow:0 0 3vh rgba(77,155,255,.2);}
+  .row.rest{opacity:.5;}
+  .crown{font-size:3.4vh;}
+  .rk.restnum{color:var(--muted);}
+  .row .rk{font-size:3.4vh;font-weight:900;color:var(--muted);width:3.5vw;text-align:center;}
+  .row.lead .rk{color:var(--gold);}
+  .row .nm{font-size:5vh;font-weight:900;flex:1;}
+  .row .ro{font-size:2.2vh;color:var(--gold);font-weight:800;margin-left:.6vw;}
+  .row .restlab{font-size:2.2vh;color:var(--muted);font-weight:800;margin-left:.6vw;}
+  .row .tot{font-size:7vh;font-weight:900;font-family:ui-monospace,monospace;}
+  .idle{flex:1;display:flex;align-items:center;justify-content:center;font-size:3.4vh;color:var(--muted);font-weight:800;text-align:center;}
+
+  /* run-out popup（59と同じ意匠） */
+  .celebrate{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 40%,rgba(10,40,26,.85),rgba(3,8,6,.92));backdrop-filter:blur(3px);overflow:hidden;padding:3vh;}
+  .celebrate.on{display:flex;}
+  .cel{position:relative;text-align:center;background:#fbf8f0;border:.3vh solid var(--gold-dk);border-radius:3vh;padding:5vh 6vw;box-shadow:0 0 8vh rgba(230,180,0,.4);animation:pop .45s cubic-bezier(.2,1.3,.4,1);}
+  .cel .crown{width:12vh;height:auto;}
+  .cel .t1{font-size:6vh;font-weight:900;color:#1a1a1a;line-height:1;}
+  .cel .t2{font-size:6vh;font-weight:900;line-height:1.05;background:linear-gradient(90deg,#e6b400,#b98f00);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .cel .mid{display:flex;align-items:center;justify-content:center;gap:3vw;margin:2.5vh 0 1vh;}
+  .cel .cnt2{display:flex;flex-direction:column;align-items:center;line-height:1;}
+  .cel .cnt2 .lb{font-size:2.4vh;font-weight:800;color:#666;}
+  .cel .cnt2 .num{font-size:8vh;font-weight:900;color:var(--gold-dk);margin:.4vh 0;}
+  .cel .who{font-size:4vh;font-weight:900;color:#1a1a1a;margin-top:1vh;}
+  .cel .who .pt{color:var(--gold-dk);}
+  .cel .cap{font-size:2.6vh;font-weight:700;color:#666;margin-top:1vh;}
+  @keyframes pop{0%{transform:scale(.5);opacity:0}100%{transform:scale(1);opacity:1}}
+  .confetti{position:absolute;top:-3vh;animation:fall linear forwards;}
+  @keyframes fall{0%{transform:translateY(-3vh) rotate(0);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:.9}}
+  footer{border-top:1px solid var(--line);padding:1.1vh 2.4vw;text-align:center;color:#5a6b8c;font-size:1.6vh;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><span class="dot"></span>MANMARU <small>59 観戦</small></div>
+  <div class="rack" id="rack"></div>
+  <div class="dir" id="dir"></div>
+  <div class="live" id="live"><span class="l"></span><span id="liveT">接続待ち</span></div>
+</header>
+
+<main>
+  <div class="h2" id="h2" style="display:none;">打順（プレー順）　—　数字＝打順 / →・←＝進行方向 / 👑＝現在の首位</div>
+  <div class="rank" id="rank"></div>
+  <div class="idle" id="idle">入力端末の接続を待っています…<br><span style="font-size:2.4vh">（59シートで入力すると、ここに反映されます）</span></div>
+</main>
+
+<footer>© 2026 P.B.S MANMARU ／ 同一ブラウザの別タブ・別ウィンドウで 59シートと本ページを開くと連動します（ローカルデモ）</footer>
+
+<div class="celebrate" id="celebrate"></div>
+
+<script>
+const RPP=5;
+const fmt=v=>v===0?{t:'ー',c:'zero'}:{t:(v>0?'+':'−')+Math.abs(v),c:v>0?'plus':'minus'};
+let S=null, liveT=null;
+
+function markLive(){const l=document.getElementById('live');l.classList.add('on');document.getElementById('liveT').textContent='ライブ';clearTimeout(liveT);liveT=setTimeout(function(){l.classList.remove('on');document.getElementById('liveT').textContent='待機';},12000);}
+
+function render(){
+  const has=S&&Array.isArray(S.players)&&S.players.length;
+  document.getElementById('idle').style.display=has?'none':'';
+  document.getElementById('h2').style.display=has?'':'none';
+  document.getElementById('rank').style.display=has?'':'none';
+  if(!has){document.getElementById('rack').textContent='';document.getElementById('dir').innerHTML='';return;}
+  const pg=Math.floor((S.editRack||0)/RPP), fwd=pg%2===0;
+  const order=(S.baseOrder||S.players.map(p=>p.id)).map(id=>S.players.find(p=>p.id===id)).filter(Boolean);
+  document.getElementById('rack').innerHTML='<b>'+((S.editRack||0)+1)+'</b>ラック目 <span style="color:var(--muted);font-size:2.6vh">('+(pg+1)+'ページ)</span>';
+  const names=order.map(p=>p.name.replace('さん',''));
+  document.getElementById('dir').innerHTML='<span class="arw">'+(fwd?'→':'←')+'</span>'+names.join(fwd?' → ':' ← ');
+  const turn=fwd?order:order.slice().reverse();   // 打順(現在の方向)
+  const maxTot=Math.max.apply(null,S.players.map(p=>p.total||0));
+  let n=0;
+  document.getElementById('rank').innerHTML=turn.map(function(p){const f=fmt(p.total||0);const lead=(p.total||0)===maxTot&&maxTot!==0;
+    let num,cls=''; if(p.resting){num='<span class="rk restnum">休</span>';cls=' rest';} else {n++;num='<span class="rk">'+n+'番手</span>';if(n===1)cls=' first';}
+    return '<div class="row'+cls+'">'+num+
+      '<span class="nm">'+p.name+(lead?' <span class="crown">👑</span>':'')+(p.roCount?'<span class="ro">🔥×'+p.roCount+'</span>':'')+'</span>'+
+      '<span class="tot '+f.c+'">'+f.t+'</span></div>';}).join('');
+}
+
+/* run-out ポップアップ */
+function ball9(size){const R=size/2,cx=R,cy=R;
+  return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'" style="display:block;filter:drop-shadow(0 4px 6px rgba(0,0,0,.2))">'
+    +'<defs><clipPath id="b9d"><circle cx="'+cx+'" cy="'+cy+'" r="'+(R-2)+'"/></clipPath></defs>'
+    +'<circle cx="'+cx+'" cy="'+cy+'" r="'+(R-2)+'" fill="#fcfaf2" stroke="#cabf9f" stroke-width="1.5"/>'
+    +'<rect x="0" y="'+(cy-size*0.27)+'" width="'+size+'" height="'+(size*0.54)+'" fill="#f2c400" clip-path="url(#b9d)"/>'
+    +'<circle cx="'+cx+'" cy="'+cy+'" r="'+(size*0.235)+'" fill="#fff"/>'
+    +'<text x="'+cx+'" y="'+cy+'" text-anchor="middle" dominant-baseline="central" font-family="Georgia,serif" font-weight="700" font-size="'+(size*0.3)+'" fill="#1a1a1a">9</text>'
+    +'<ellipse cx="'+(cx-size*0.17)+'" cy="'+(cy-size*0.2)+'" rx="'+(size*0.15)+'" ry="'+(size*0.09)+'" fill="rgba(255,255,255,.6)"/></svg>';}
+function celebrate(name,pts,count){
+  const el=document.getElementById('celebrate');const emo=['🎉','🎊','✨','🏆','⭐','🟡','🔵'];
+  let conf='';for(let i=0;i<60;i++){const l=Math.random()*100,d=Math.random()*0.7,dur=1.8+Math.random()*1.8,sz=1.6+Math.random()*2.6,e=emo[Math.floor(Math.random()*emo.length)];
+    conf+='<span class="confetti" style="left:'+l+'%;font-size:'+sz+'vh;animation-delay:'+d+'s;animation-duration:'+dur+'s">'+e+'</span>';}
+  const crown='<svg class="crown" viewBox="0 0 100 74"><path d="M8 62 L20 26 L36 46 L50 14 L64 46 L80 26 L92 62 Z" fill="#e6b400" stroke="#b98f00" stroke-width="2.5" stroke-linejoin="round"/><rect x="12" y="60" width="76" height="9" rx="3" fill="#e6b400"/></svg>';
+  el.innerHTML=conf+'<div class="cel">'+crown+'<div class="t1">RUN OUT</div><div class="t2">ACHIEVED!</div>'
+    +'<div class="mid">'+ball9(90)+'<div class="cnt2"><span class="lb">通算</span><span class="num">'+count+'</span><span class="lb">回目</span></div></div>'
+    +'<div class="who">'+name+'　<span class="pt">+'+pts+'点</span></div><div class="cap">ランナウト達成！おめでとうございます！</div></div>';
+  el.classList.add('on');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('on');},6000);
+}
+
+let ch=null; try{ch=new BroadcastChannel('manmaru59-live');}catch(_){}
+if(ch){ ch.onmessage=function(e){const m=e.data;if(!m)return;markLive();
+  if(m.type==='state'){S=m.state;render();}
+  else if(m.type==='celebrate'){celebrate(m.name,m.pts,m.count);}};
+  ch.postMessage({type:'req'});   // 入力端末へ現在の状態を要求
+  setTimeout(function(){if(ch)ch.postMessage({type:'req'});},800);
+}
+render();
+</script>
+</body>
+</html>
