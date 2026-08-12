@@ -80,8 +80,13 @@
   .actions .clear{flex:1;padding:14px 0;border-radius:14px;border:1px solid var(--line);background:transparent;color:var(--muted);font-weight:800;font-size:16px;}
   .actions .confirm{flex:3;padding:14px 0;border-radius:14px;border:none;background:linear-gradient(90deg,var(--gold),var(--gold-dk));color:#241c00;font-weight:900;font-size:22px;}
 
-  /* 表は「内部だけ」で縦スライド（この箱の中でページがカチッと切替。全体・入力は動かない） */
-  .board{margin:0;padding:0;background:transparent;border:none;border-radius:0;height:100dvh;overflow-y:auto;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;}
+  /* 表：現在の1ページだけ表示。ページ移動は下のボタンのみ（スワイプ/スクロールでは切替わらない） */
+  .board{margin:0;padding:14px 16px 20px;background:transparent;border:none;border-radius:0;min-height:100dvh;display:flex;flex-direction:column;}
+  .boardnav{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+  .boardnav .bn{flex:1;padding:16px 0;border-radius:12px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);font-weight:800;font-size:20px;}
+  .boardnav .bn:disabled{opacity:.32;}
+  .boardnav .bn-ind{flex:0 0 auto;min-width:120px;text-align:center;font-weight:900;font-size:20px;color:var(--muted);}
+  .boardnav .bn-now{margin:0 0 8px;width:100%;padding:10px 0;border-radius:10px;border:1px dashed var(--blue-lt);background:transparent;color:var(--blue-lt);font-weight:800;font-size:16px;}
   .gear{margin-left:auto;font-size:13px;color:var(--muted);background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-weight:800;white-space:nowrap;flex-shrink:0;}
   .modal{position:fixed;inset:0;z-index:120;display:none;align-items:center;justify-content:center;background:rgba(6,12,26,.75);padding:18px;}
   .modal.on{display:flex;}
@@ -102,9 +107,9 @@
   .board h3{margin:0 0 4px;font-size:18px;}
   .board .hint{font-size:14px;color:var(--muted);line-height:1.5;margin-bottom:6px;}
   /* 盤面：ページ単位スナップ（横スライド / 縦スライド 切替） */
-  /* 成績表：1ページ(5ラック)＝1画面、ページごとにカチッとスナップ */
-  .page-panel{min-height:100dvh;scroll-snap-align:start;scroll-snap-stop:always;display:flex;flex-direction:column;justify-content:center;padding:22px 16px;border-top:1px solid var(--line);}
-  .page-panel.curpage{background:rgba(77,155,255,.06);}
+  /* 成績表：現在の1ページ(5ラック)だけを大きく表示（ボタンで切替） */
+  .page-panel{flex:1;display:flex;flex-direction:column;justify-content:center;padding:8px 2px;}
+  .page-panel.curpage{}
   .page-panel h4{margin:0 0 14px;font-size:26px;font-weight:900;color:var(--gold);text-align:center;}
   .page-panel.curpage h4::after{content:' ● 現在';font-size:14px;color:var(--blue-lt);}
   table{width:100%;border-collapse:collapse;font-size:28px;table-layout:fixed;}
@@ -198,7 +203,7 @@
   <div id="boardScroller"></div>
 </div>
 
-<p class="copy" style="text-align:center;margin:10px 14px 20px;">© 2026 P.B.S MANMARU（光輪タイヤ株式会社）　build&nbsp;2026-08-08&nbsp;表=内部スクロール＋大きな文字&nbsp;JST</p>
+<p class="copy" style="text-align:center;margin:10px 14px 20px;">© 2026 P.B.S MANMARU（光輪タイヤ株式会社）　build&nbsp;2026-08-12&nbsp;表=ページ移動はボタンのみ&nbsp;JST</p>
 
 <script>
 const CFG={runoutMultiplier:2,racksPerPage:5};
@@ -412,11 +417,25 @@ function pagePanel(p){
   html+='<tr class="totrow"><td class="lbl">ページ計</td>'+ord.map(pl=>{const f=fmt(cum[pl.id]);return `<td class="${f.c}">${f.t}</td>`;}).join('')+'</tr>';
   return html+'</table></div>';
 }
+let boardPage=null;   // 表示中のページ。移動は下のボタンのみ（スワイプ/スクロールでは切替えない）
 function renderBoard(){
   const sc=document.getElementById('boardScroller');
   const lastPage=Math.floor(Math.max(frontier,editRack)/CFG.racksPerPage);
-  let html='';for(let p=0;p<=lastPage;p++)html+=pagePanel(p);
+  const curPage=Math.floor(editRack/CFG.racksPerPage);
+  if(boardPage==null)boardPage=curPage;
+  boardPage=Math.max(0,Math.min(boardPage,lastPage));
+  let html=`<div class="boardnav">`
+    +`<button class="bn prev" ${boardPage<=0?'disabled':''}>◀ 前のページ</button>`
+    +`<span class="bn-ind">${boardPage+1} / ${lastPage+1} ページ</span>`
+    +`<button class="bn next" ${boardPage>=lastPage?'disabled':''}>次のページ ▶</button>`
+    +`</div>`;
+  if(boardPage!==curPage)html+=`<button class="bn-now">● 現在プレイ中の ${curPage+1}ページ目へ</button>`;
+  html+=pagePanel(boardPage);
   sc.innerHTML=html;
+  const pv=sc.querySelector('.bn.prev'),nx=sc.querySelector('.bn.next'),nw=sc.querySelector('.bn-now');
+  if(pv)pv.onclick=()=>{if(boardPage>0){boardPage--;renderBoard();}};
+  if(nx)nx.onclick=()=>{if(boardPage<lastPage){boardPage++;renderBoard();}};
+  if(nw)nw.onclick=()=>{boardPage=curPage;renderBoard();};
   sc.querySelectorAll('tr.clk').forEach(tr=>tr.onclick=()=>loadRack(+tr.dataset.r));
 }
 
