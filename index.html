@@ -408,8 +408,8 @@ function pagePanel(p){
       row+=`<td>${cell}</td>`;});
     html+=row+'</tr>';}
   const cum={};players.forEach(pl=>cum[pl.id]=0);
-  for(let i=0;i<start+CFG.racksPerPage;i++)if(history[i])players.forEach(pl=>cum[pl.id]+=history[i].net[pl.id]);
-  html+='<tr class="totrow"><td class="lbl">累計</td>'+ord.map(pl=>{const f=fmt(cum[pl.id]);return `<td class="${f.c}">${f.t}</td>`;}).join('')+'</tr>';
+  for(let i=start;i<start+CFG.racksPerPage;i++)if(history[i])players.forEach(pl=>cum[pl.id]+=(history[i].net[pl.id]||0));   // このページ(5ラック)だけの合計
+  html+='<tr class="totrow"><td class="lbl">ページ計</td>'+ord.map(pl=>{const f=fmt(cum[pl.id]);return `<td class="${f.c}">${f.t}</td>`;}).join('')+'</tr>';
   return html+'</table></div>';
 }
 function renderBoard(){
