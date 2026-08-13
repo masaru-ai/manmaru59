@@ -104,7 +104,7 @@
   .m-start{background:linear-gradient(90deg,var(--gold),var(--gold-dk));color:#241c00;}
   .m-rename{background:var(--blue);color:#fff;}
   .m-add{background:var(--green);color:#06210f;}
-  .m-clear{background:var(--panel2);border:1px solid var(--line)!important;color:var(--ink);}
+  .m-clear{background:transparent;border:1px solid var(--minus)!important;color:var(--minus);}
   .m-cancel{background:transparent;border:1px solid var(--line)!important;color:var(--muted);}
   .modal-card .warn{font-size:11px;color:var(--minus);text-align:center;margin-top:10px;}
   .board h3{margin:0 0 4px;font-size:18px;}
@@ -193,7 +193,7 @@
       <button class="m-rename" id="setupRename">名前を更新（スコアは続行）</button>
       <button class="m-add" id="setupAdd" style="display:none;">＋途中参加で追加（スコア続行）</button>
       <button class="m-start" id="setupStart">この人数で新規ゲーム（リセット）</button>
-      <button class="m-clear" id="setupClearNames">名前を全部クリア</button>
+      <button class="m-clear" id="setupClearNames">🗑 オールクリア（名前・スコア全消去）</button>
       <button class="m-cancel" id="setupCancel">キャンセル</button>
     </div>
     <p class="warn">※「新規ゲーム」だけスコアをリセットします（他はスコア続行）</p>
@@ -504,7 +504,13 @@ document.getElementById('setupCancel').onclick=()=>document.getElementById('setu
 document.getElementById('setupStart').onclick=()=>{if(!confirm('現在のスコアをリセットして新規ゲームを開始します。よろしいですか？'))return;newGame(collectNames());document.getElementById('setup').classList.remove('on');};
 document.getElementById('setupRename').onclick=()=>{renamePlayers(collectNames());document.getElementById('setup').classList.remove('on');};
 document.getElementById('setupAdd').onclick=()=>{addJoiners(collectNames());document.getElementById('setup').classList.remove('on');};
-document.getElementById('setupClearNames').onclick=()=>{buildSetup(+document.getElementById('mCount').textContent,[]);};   // 名前欄を全部空に（プレイヤーN表示に戻す）
+document.getElementById('setupClearNames').onclick=()=>{   // オールクリア＝新規ゲームを押さずに即・全消去（名前/スコア/履歴）
+  if(!confirm('今のゲームの情報（名前・スコア・履歴）を全部消して、まっさらな状態にします。よろしいですか？'))return;
+  // ★将来アカウント連携時：ここで現セッションをDBへ確定保存(アーカイブ)してからクリア＝DB上は残す
+  const n=+document.getElementById('mCount').textContent;
+  newGame(new Array(n).fill(''));   // 名前空(=プレイヤーN)＋スコア/履歴も全消去してその場で反映
+  document.getElementById('setup').classList.remove('on');
+};
 
 /* ===== 起動：保存があれば再開、無ければ4人でスタート ===== */
 if(!load()) newGame(['Aさん','Bさん','Cさん','Dさん']); else renderAll();
