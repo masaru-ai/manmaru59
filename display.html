@@ -24,14 +24,14 @@
   .live.on .l{background:var(--green);box-shadow:0 0 1.4vh var(--green);}
 
   main{flex:1;display:flex;flex-direction:column;padding:2.4vh 3vw;min-height:0;gap:1.4vh;}
-  .h2{font-size:2.6vh;color:var(--muted);font-weight:800;letter-spacing:.06em;}
+  .h2{font-size:2vh;color:var(--muted);font-weight:800;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .rank{flex:1;display:flex;flex-direction:column;gap:1.4vh;min-height:0;}
   .row{display:flex;align-items:center;gap:1.6vw;background:var(--panel);border:1px solid var(--line);border-radius:1.8vh;padding:1.6vh 1.8vw;flex:1;}
   .row.first{border-color:var(--blue-lt);background:linear-gradient(90deg,rgba(77,155,255,.14),rgba(77,155,255,.02));box-shadow:0 0 3vh rgba(77,155,255,.2);}
   .row.rest{opacity:.5;}
   .crown{font-size:3.4vh;}
   .rk.restnum{color:var(--muted);}
-  .row .rk{font-size:3.4vh;font-weight:900;color:var(--muted);width:3.5vw;text-align:center;}
+  .row .rk{font-size:3.4vh;font-weight:900;color:var(--muted);flex:0 0 auto;min-width:5.5vw;padding:0 .6vw;text-align:center;white-space:nowrap;}
   .row.lead .rk{color:var(--gold);}
   .row .nm{font-size:5vh;font-weight:900;flex:1;}
   .row .ro{font-size:2.2vh;color:var(--gold);font-weight:800;margin-left:.6vw;}
