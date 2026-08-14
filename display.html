@@ -39,6 +39,18 @@
   .row .tot{font-size:7vh;font-weight:900;font-family:ui-monospace,monospace;}
   .idle{flex:1;display:flex;align-items:center;justify-content:center;font-size:3.4vh;color:var(--muted);font-weight:800;text-align:center;}
 
+  /* 左=打順/得点（〜54%）｜右=広告枠 */
+  .stage{flex:1;display:flex;gap:2vw;min-height:0;}
+  .content{flex:0 0 54%;display:flex;flex-direction:column;gap:1.4vh;min-height:0;}
+  .adcol{flex:1;min-height:0;position:relative;border:1px solid var(--line);border-radius:2vh;overflow:hidden;background:var(--panel);}
+  .ad{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:5vh 3vw;opacity:0;transition:opacity .8s;}
+  .ad.on{opacity:1;}
+  .ad .pr{position:absolute;top:1.6vh;right:1.4vw;font-size:1.7vh;font-weight:900;letter-spacing:.1em;color:#0b1220;background:var(--gold);border-radius:99px;padding:.4vh 1.2vw;}
+  .ad .at{font-size:5.4vh;font-weight:900;line-height:1.18;}
+  .ad .as{font-size:2.8vh;font-weight:700;margin-top:2.4vh;line-height:1.55;opacity:.92;}
+  .ad .qr{margin-top:3.2vh;width:18vh;height:18vh;background:#fff;border-radius:1.6vh;display:flex;align-items:center;justify-content:center;color:#333;font-weight:900;font-size:2.2vh;box-shadow:0 1vh 3vh rgba(0,0,0,.25);}
+  .adlabel{position:absolute;bottom:1vh;left:0;right:0;text-align:center;font-size:1.5vh;color:rgba(255,255,255,.45);font-weight:800;letter-spacing:.12em;}
+
   /* run-out popup（59と同じ意匠） */
   .celebrate{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 40%,rgba(10,40,26,.85),rgba(3,8,6,.92));backdrop-filter:blur(3px);overflow:hidden;padding:3vh;}
   .celebrate.on{display:flex;}
@@ -69,9 +81,14 @@
 </header>
 
 <main>
-  <div class="h2" id="h2" style="display:none;">打順（プレー順）　—　数字＝打順 / →・←＝進行方向 / 👑＝現在の首位</div>
-  <div class="rank" id="rank"></div>
-  <div class="idle" id="idle">入力端末の接続を待っています…<br><span style="font-size:2.4vh">（59シートで入力すると、ここに反映されます）</span></div>
+  <div class="stage">
+    <section class="content">
+      <div class="h2" id="h2" style="display:none;">打順（プレー順）　—　数字＝打順 / →・←＝進行方向 / 👑＝現在の首位</div>
+      <div class="rank" id="rank"></div>
+      <div class="idle" id="idle">入力端末の接続を待っています…<br><span style="font-size:2.4vh">（59シートで入力すると、ここに反映されます）</span></div>
+    </section>
+    <aside class="adcol" id="adcol"></aside>
+  </div>
 </main>
 
 <footer>© 2026 P.B.S MANMARU ／ 同一ブラウザの別タブ・別ウィンドウで 59シートと本ページを開くと連動します（ローカルデモ）</footer>
@@ -125,6 +142,26 @@ function celebrate(name,pts,count){
     +'<div class="who">'+name+'　<span class="pt">+'+pts+'点</span></div><div class="cap">ランナウト達成！おめでとうございます！</div></div>';
   el.classList.add('on');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('on');},6000);
 }
+
+/* ===== 右の広告枠（常時表示・8秒ローテ）=====
+   ここを差し替えるだけで広告を管理。img(画像URL)があれば画像広告、無ければ文字広告。
+   ステマ規制対応で必ず「広告/PR」を明示。将来は外部データ(スポンサー枠/DOOH)から流し込む想定。 */
+const ADS=[
+  {bg:'linear-gradient(135deg,#0061b0,#00376a)',fg:'#ffffff',pr:'PR',title:'MANMARU 会員募集',sub:'無人ビリヤード・24hいつでも<br>スマホで予約 → スマート解錠',qr:'予約はこちら'},
+  {bg:'linear-gradient(135deg,#1a2a49,#0b1220)',fg:'#eef3ff',pr:'PR',title:'光輪タイヤ',sub:'タイヤ交換・持込OK<br>沼津のタイヤ専門店',qr:'来店予約'},
+  {bg:'linear-gradient(135deg,#e6b400,#b98f00)',fg:'#241c00',pr:'広告募集中',title:'この枠に<br>広告を掲載しませんか？',sub:'店内モニターに常時表示<br>お問い合わせは店舗まで',qr:''},
+];
+function buildAds(){
+  const col=document.getElementById('adcol'); if(!col)return;
+  col.innerHTML=ADS.map(function(a,i){return '<div class="ad'+(i===0?' on':'')+'" style="background:'+a.bg+';color:'+a.fg+'">'
+    +(a.pr?'<span class="pr">'+a.pr+'</span>':'')
+    +(a.img?'<img src="'+a.img+'" style="max-width:100%;max-height:100%;object-fit:contain">':
+       '<div class="at">'+a.title+'</div>'+(a.sub?'<div class="as">'+a.sub+'</div>':'')+(a.qr?'<div class="qr">'+a.qr+'<br>QR</div>':''))
+    +'</div>';}).join('')+'<div class="adlabel">広告 / PR</div>';
+  if(ADS.length>1){let i=0;const els=col.querySelectorAll('.ad');
+    setInterval(function(){els[i].classList.remove('on');i=(i+1)%els.length;els[i].classList.add('on');},8000);}
+}
+buildAds();
 
 let ch=null; try{ch=new BroadcastChannel('manmaru59-live');}catch(_){}
 if(ch){ ch.onmessage=function(e){const m=e.data;if(!m)return;markLive();
